@@ -39,7 +39,7 @@ from ..managers.rpcmanager import implementor
 
 from os import path, makedirs
 
-import md5
+from hashlib import md5
 import sqlite3
 import threading
 import time
@@ -985,7 +985,7 @@ class AuditSQLiteDB (BaseAuditDB):
                 if directory and not path.exists(directory):
                     try:
                         makedirs(directory)
-                    except Exception, e:
+                    except Exception as e:
                         warnings.warn(
                             "Error creating directory %r: %s" %
                             (directory, str(e)),
@@ -997,7 +997,6 @@ class AuditSQLiteDB (BaseAuditDB):
 
             # Create the database file.
             self.__db = sqlite3.connect(filename)
-            self.__db.text_factory = lambda x: unicode(x, "utf-8", "ignore")
 
         # Update the database filename.
         if self.__filename != ":memory:":
@@ -1095,7 +1094,7 @@ class AuditSQLiteDB (BaseAuditDB):
                     # Re-raise the exception.
                     raise
 
-            except sqlite3.Error, e:
+            except sqlite3.Error as e:
 
                 # Raise SQL errors as IO errors.
                 raise IOError(str(e))
@@ -1136,9 +1135,7 @@ class AuditSQLiteDB (BaseAuditDB):
         data = super(AuditSQLiteDB, self).encode(data)
 
         # Return the MD5 hexadecimal digest of the data.
-        h = md5.new()
-        h.update(data)
-        return h.hexdigest()
+        return md5(data).hexdigest()
 
 
     #--------------------------------------------------------------------------
@@ -1344,7 +1341,7 @@ class AuditSQLiteDB (BaseAuditDB):
             str(k): int(v) for k, v in self.__cursor.fetchall()
         }
         self.__data_subtype_reverse_cache = {
-            v: k for k, v in self.__data_subtype_cache.iteritems()
+            v: k for k, v in iter(self.__data_subtype_cache.items())
         }
 
 
@@ -1714,7 +1711,7 @@ class AuditSQLiteDB (BaseAuditDB):
             if data_subtype is None or data_subtype == "data/abstract":
                 query  = "SELECT identity FROM data;"
                 self.__cursor.execute(query)
-                return { str(row[0]) for row in self.__cursor.fetchall() }
+                return {row[0] for row in self.__cursor.fetchall()}
 
             # We have data_subtype but no data_type.
             # Derive the second from the first.
@@ -1757,7 +1754,7 @@ class AuditSQLiteDB (BaseAuditDB):
             query  = "SELECT identity FROM data WHERE type = ?;"
             values = (self.__get_or_create_type(data_subtype),)
         self.__cursor.execute(query, values)
-        return { str(row[0]) for row in self.__cursor.fetchall() }
+        return {row[0] for row in self.__cursor.fetchall()}
 
 
     #--------------------------------------------------------------------------
@@ -1951,7 +1948,7 @@ class AuditSQLiteDB (BaseAuditDB):
             (identity,))
         rows = self.__cursor.fetchall()
         if rows:
-            return { str(x[0]) for x in rows }
+            return {x[0] for x in rows }
         return set()
 
 
@@ -1978,7 +1975,7 @@ class AuditSQLiteDB (BaseAuditDB):
             (stage,))
         rows = self.__cursor.fetchall()
         if rows:
-            return { str(x[0]) for x in rows }
+            return {x[0] for x in rows}
         return set()
 
 

@@ -114,7 +114,7 @@ def rules_matcher(text, rules_group, rules_index, verbosity=0):
             rule_negate = rule.negate
 
             # Apply regex
-            if isinstance(rule_regex, basestring) or isinstance(rule_regex, unicode):
+            if isinstance(rule_regex, str):
                 m = rules_matcher(text, rules_index[rule_regex], rules_index)
             else:
                 m = rule_regex.search(text)
@@ -175,7 +175,7 @@ def load_single_rule(rule):
     try:
         _tmp_rule = re.compile(rule["regex"]) if not rule["regex"].startswith("REF://") \
             else rule["regex"].replace("REF://", "")
-    except re.error, e:
+    except re.error as e:
         print("Error compiling regex '%s': %s" % (rule["regex"], e))
         exit(1)
 
@@ -367,7 +367,7 @@ def extract_info(path, rule_pack, display_processed=False, display_non_match=Fal
     #
     # Find in plugins
     #
-    for i in xrange(plugin_count):
+    for i in range(plugin_count):
 
         # Get next plugin to process
         f = plugin_list[i]
@@ -414,7 +414,7 @@ def extract_info(path, rule_pack, display_processed=False, display_non_match=Fal
     # Display only for debug
     if display_non_match:
         print("Non processed files:")
-        for i, v in not_processed.iteritems():
+        for i, v in iter(not_processed.items()):
             print("%s\t%s" % (i, v))
 
         print("\n\nTotal non processed files: %s" % len(not_processed))
@@ -422,7 +422,7 @@ def extract_info(path, rule_pack, display_processed=False, display_non_match=Fal
     # Display only for debug
     if display_processed:
         print("\n\n[*] Processed files:")
-        for i, v in results.iteritems():
+        for i, v in iter(results.items()):
             print("%s: " % i)
             print("   - %s (%s)" % (v[0], v[1]))
             print("   - %s" % files[i])

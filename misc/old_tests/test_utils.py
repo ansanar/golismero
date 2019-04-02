@@ -56,7 +56,7 @@ case_uncamelcase = [
     ("BFG9000",           "BFG 9000"),
 ]
 def test_uncamelcase():
-    print "Testing uncamelcase()..."
+    print("Testing uncamelcase()...")
     for src, dst in case_uncamelcase:
         assert uncamelcase(src) == dst, (dst, uncamelcase(src))
 

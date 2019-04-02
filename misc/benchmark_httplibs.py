@@ -294,24 +294,22 @@ import timeit
 
 #------------------------------------------------------------------------------
 def urllib2_test():
-    import urllib2
+    import urllib.request
 
     errors = 0
     oks = 0
     for a in url:
         try:
-            req = urllib2.Request(a)
-
-            handler = urllib2.urlopen(req)
+            urllib.request.urlopen(a)
 
             oks += 1
         except:
             errors += 1
             continue
 
-        print ".",
-    print
-    print "Errors: %s | Oks: %s." % (str(errors), str(oks))
+        print(".",)
+    print()
+    print("Errors: %s | Oks: %s." % (str(errors), str(oks)))
 
 
 #------------------------------------------------------------------------------
@@ -332,9 +330,9 @@ def request_test():
             errors += 1
             continue
 
-        print ".",
-    print
-    print "Errors: %s | Oks: %s." % (str(errors), str(oks))
+        print(".",)
+    print()
+    print("Errors: %s | Oks: %s." % (str(errors), str(oks)))
 
 
 #------------------------------------------------------------------------------
@@ -352,9 +350,9 @@ def urllib3_test():
             errors += 1
             continue
 
-        print ".",
-    print
-    print "Errors: %s | Oks: %s." % (str(errors), str(oks))
+        print(".",)
+    print()
+    print("Errors: %s | Oks: %s." % (str(errors), str(oks)))
 
 
 #------------------------------------------------------------------------------
@@ -371,24 +369,24 @@ def httplib2_test():
         except:
             errors += 1
             continue
-        print ".",
+        print(".",)
 
-    print
-    print "Errors: %s | Oks: %s." % (str(errors), str(oks))
+    print()
+    print("Errors: %s | Oks: %s." % (str(errors), str(oks)))
 
 
 #------------------------------------------------------------------------------
 if __name__=='__main__':
 
-    print "Testing python HTTP libs performance:"
-    print
-    print "Each library will request '%s' URLs." % len(url)
+    print("Testing python HTTP libs performance:")
+    print()
+    print("Each library will request '%s' URLs." % len(url))
 
-    print
-    print "'Request' library time: %s s" % str(timeit.timeit(request_test, number=1))
-    print
-    print "'urllib2' library time: %s s" % str(timeit.timeit(urllib2_test, number=1))
-    print
-    print "'httplib2' library time: %s s" % str(timeit.timeit(httplib2_test, number=1))
-    print
-    print "'urllib3' library time: %s s" % str(timeit.timeit(urllib3_test, number=1))
+    print()
+    print("'Request' library time: %s s" % str(timeit.timeit(request_test, number=1)))
+    print()
+    print("'urllib2' library time: %s s" % str(timeit.timeit(urllib2_test, number=1)))
+    print()
+    print("'httplib2' library time: %s s" % str(timeit.timeit(httplib2_test, number=1)))
+    print()
+    print("'urllib3' library time: %s s" % str(timeit.timeit(urllib3_test, number=1)))

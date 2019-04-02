@@ -36,7 +36,7 @@ from ...config import Config
 from ...net.web_utils import parse_url
 from ...text.text_utils import to_utf8
 
-from urllib import quote
+from urllib.parse import quote
 
 
 #------------------------------------------------------------------------------
@@ -207,13 +207,13 @@ class URL(_AbstractURL):
         if referer is not None and not isinstance(referer, str):
             raise TypeError("Expected string, got %r instead" % type(referer))
         if post_params:
-            if hasattr(post_params, "iteritems"):
+            if hasattr(post_params, "items"):
                 post_params = {
-                    to_utf8(k): to_utf8(v) for k,v in post_params.iteritems()
+                    to_utf8(k): to_utf8(v) for k,v in iter(post_params.items())
                 }
                 post_data = '&'.join(
                     '%s=%s' % ( quote(k, safe=''), quote(v, safe='') )
-                    for (k, v) in sorted(post_params.iteritems())
+                    for (k, v) in sorted(iter(post_params.items()))
                 )
             else:
                 post_data   = to_utf8(post_params)
@@ -241,6 +241,8 @@ class URL(_AbstractURL):
         s %= (self.url, self.method, self.post_params, self.referer, self.depth)
         return s
 
+    def __hash__(self):
+        return hash((self.url, self.method, frozenset(self.post_params), self.referer, self.depth))
 
     #--------------------------------------------------------------------------
     @property
@@ -467,7 +469,7 @@ class FolderURL(_AbstractURL):
 
         :raises ValueError: Only absolute URLs must be used.
         """
-        assert isinstance(url, basestring)
+        assert isinstance(url, str)
 
         # Parse, verify and canonicalize the URL.
         parsed = parse_url(url)

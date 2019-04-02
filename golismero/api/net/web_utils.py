@@ -41,7 +41,7 @@ from ..text.text_utils import generate_random_string, split_first, to_utf8
 from ..text.matching_analyzer import get_diff_ratio
 from ...common import json_decode, json_encode
 
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 from copy import deepcopy
 from posixpath import join, splitext, split
 from random import randint
@@ -49,8 +49,8 @@ from requests import Request, Session, codes
 from requests.auth import HTTPBasicAuth, HTTPDigestAuth
 from requests_ntlm import HttpNtlmAuth
 from tldextract import TLDExtract
-from urllib import quote, quote_plus, unquote, unquote_plus
-from urlparse import urljoin as original_urljoin
+from urllib.parse import quote, quote_plus, unquote, unquote_plus
+from urllib.parse import urljoin as original_urljoin
 from warnings import warn
 
 import re
@@ -59,11 +59,7 @@ import re
 #------------------------------------------------------------------------------
 # URL class from urllib3 renamed as Urllib3_Url to avoid confusion.
 
-try:
-    from requests.packages.urllib3.util import Url as Urllib3_Url
-except ImportError:
-    from urllib3.util import Url as Urllib3_Url
-
+from requests.packages.urllib3.util import Url as Urllib3_Url
 
 #------------------------------------------------------------------------------
 __user_agents = (
@@ -160,7 +156,7 @@ def data_from_http_response(response):
             data = Image(response.data, response.content_type)
 
     # Catch errors and throw warnings instead.
-    except Exception, e:
+    except Exception as e:
         ##raise # XXX DEBUG
         warn(str(e), RuntimeWarning)
 
@@ -626,7 +622,7 @@ d
 
     :raises: ValueError
     """
-    if not isinstance(error_page, basestring):
+    if not isinstance(error_page, str):
         raise TypeError("Expected basestring, got '%s' instead" % type(error_page))
 
     if similarity < 0 or similarity > 100.0:
@@ -1342,7 +1338,7 @@ class ParsedURL (object):
                 return self.__query
             return ''
         return '&'.join( '%s=%s' % ( quote(k, safe=''), quote(v, safe='') )
-                         for (k, v) in sorted(self.__query_params.iteritems()) )
+                         for (k, v) in sorted(iter(self.__query_params.items())) )
 
     @query.setter
     def query(self, query):
@@ -1595,7 +1591,7 @@ class HTMLElement (object):
         self.__content  = to_utf8(content)
         self.__attrs = {
             to_utf8(k): to_utf8(v)
-            for k,v in attrs.iteritems()
+            for k,v in iter(attrs.items())
         }
 
 

@@ -166,7 +166,7 @@ class AuditManager (object):
             return audit
 
         # On error, abort.
-        except Exception, e:
+        except Exception as e:
             tb = format_exc()
             try:
                 self.remove_audit(audit.name)
@@ -295,7 +295,7 @@ class AuditManager (object):
             elif message.message_code == MessageCode.MSG_CONTROL_START_AUDIT:
                 try:
                     self.new_audit(message.message_info)
-                except AuditException, e:
+                except AuditException as e:
                     tb = format_exc()
                     message = Message(
                         message_type = MessageType.MSG_TYPE_STATUS,
@@ -326,7 +326,7 @@ class AuditManager (object):
         Release all resources held by all audits.
         """
         self.__orchestrator = None
-        for name in self.__audits.keys(): # not iterkeys, will be modified
+        for name in list(self.__audits): # not iterkeys, will be modified
             try:
                 self.remove_audit(name)
             except:
@@ -515,8 +515,8 @@ class Audit (object):
 
         # XXX DEBUG
         if self.orchestrator.messageManager.DEBUG:
-            print "EXPECTING ACK %d => %s" % (
-                self.__expecting_ack - count, self.__expecting_ack)
+            print("EXPECTING ACK %d => %s" % (
+                self.__expecting_ack - count, self.__expecting_ack))
 
 
     #--------------------------------------------------------------------------
@@ -531,8 +531,8 @@ class Audit (object):
 
         # XXX DEBUG
         if self.orchestrator.messageManager.DEBUG:
-            print "EXPECTING ACK %d => %s" % (
-                self.__expecting_ack + count, self.__expecting_ack)
+            print("EXPECTING ACK %d => %s" % (
+                self.__expecting_ack + count, self.__expecting_ack))
 
 
     #--------------------------------------------------------------------------
@@ -614,7 +614,7 @@ class Audit (object):
             # Determine which stages are enabled for this run.
             self.__stages_enabled = sorted(
                 stage_num
-                for stage, stage_num in STAGES.iteritems()
+                for stage, stage_num in iter(STAGES.items())
                 if self.pluginManager.get_plugins(stage)
             )
 
@@ -759,7 +759,7 @@ class Audit (object):
                 if identity not in visited:
                     visited.add(identity)
                     data = self.database.get_data(identity)
-                    if data.is_in_scope(): # just in case...
+                    if data is not None and data.is_in_scope(): # just in case...
                         for data in data.discovered:
                             identity = data.identity
                             if identity not in existing and data.is_in_scope():
@@ -893,7 +893,7 @@ class Audit (object):
         else:
 
             # Look for the earliest stage with pending data.
-            for stage in xrange(pluginManager.min_stage,
+            for stage in range(pluginManager.min_stage,
                                 pluginManager.max_stage + 1):
                 self.__current_stage = stage
                 pending = database.get_pending_data(stage)
@@ -913,7 +913,7 @@ class Audit (object):
                 # This reduces the memory footprint for large databases.
                 candidates = list(pending)
                 pending.clear()
-                for i in xrange(0, len(candidates), 10):
+                for i in range(0, len(candidates), 10):
 
                     # Get this batch.
                     batch_ids = set(candidates[i:i+10])
@@ -972,7 +972,7 @@ class Audit (object):
 
                 # Send the pending data to the Orchestrator.
                 to_send = list(pending)
-                for i in xrange(0, len(to_send), 10):
+                for i in range(0, len(to_send), 10):
                     datalist = database.get_many_data(to_send[i:i+10])
                     self.send_msg(
                         message_type = MessageType.MSG_TYPE_DATA,

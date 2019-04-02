@@ -378,7 +378,7 @@ class AuditScope (AbstractScope):
 
         # Check the data type.
         if not isinstance(target, str):
-            if not isinstance(target, unicode):
+            if not isinstance(target, str):
                 raise TypeError("Expected str, got %r instead" % type(target))
             target = to_utf8(target)
 

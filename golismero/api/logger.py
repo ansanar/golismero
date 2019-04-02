@@ -73,7 +73,7 @@ class Logger (object):
         :param message: Message to write.
         :type message: str
         """
-        if not isinstance(message, basestring):
+        if not isinstance(message, str):
             message = str(message)
         Config._context.send_msg(
             message_type = MessageType.MSG_TYPE_CONTROL,

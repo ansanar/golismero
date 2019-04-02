@@ -113,7 +113,7 @@ class DnsSEC(object):
         :return: From a numeric text, returns the integer value of the algorithm
         :rtype: int
         """
-        if not isinstance(alg, basestring):
+        if not isinstance(alg, str):
             raise TypeError("Expected string, got %r instead" % type(alg))
 
         if alg not in DnsSEC.ALGORITHM_BY_TEXT:
@@ -298,7 +298,7 @@ class DnsRegister(Capture):
         # Checks for types
         if self._type is None:
             raise TypeError("Missing argument: 'type'")
-        if not isinstance(self._type, basestring):
+        if not isinstance(self._type, str):
             raise TypeError("Expected str, got %s" % type(self._type))
 
         super(DnsRegister, self).__init__()
@@ -360,7 +360,7 @@ class DnsRegister(Capture):
         :return: the id number of DNS register type.
         :rtype: int
         """
-        m_by_value = dict([(y, x) for x, y in DnsRegister._by_text.iteritems()])
+        m_by_value = dict([(y, x) for x, y in iter(DnsRegister._by_text.items())])
 
         return m_by_value[name]
 
@@ -380,7 +380,7 @@ class DNSRegisterAlgorithm(DnsRegister):
         #
         # Check the algorithm
         #
-        if isinstance(algorithm, basestring):
+        if isinstance(algorithm, str):
             self.__algorithm_value = DnsSEC.text_to_algorithm(algorithm)
             self.__algorithm_name  = DnsSEC.algorithm_to_text(self.__algorithm_value)
         elif isinstance(algorithm, int):
@@ -425,7 +425,7 @@ class DnsRegisterA(DnsRegister):
         :param address: The IPv4 address.
         :type address: str
         """
-        if not isinstance(address, basestring):
+        if not isinstance(address, str):
             raise TypeError("Expected str, got %s" % type(address))
 
         self.__address = address
@@ -472,7 +472,7 @@ class DnsRegisterAAAA(DnsRegister):
         :param address: The IPv6 address.
         :type address: str
         """
-        if not isinstance(address, basestring):
+        if not isinstance(address, str):
             raise TypeError("Expected str, got %s" % type(address))
 
         self.__address = address
@@ -524,7 +524,7 @@ class DnsRegisterAFSDB(DnsRegister):
         """
         if not isinstance(subtype, int):
             raise TypeError("Expected int, got %s" % type(subtype))
-        if not isinstance(hostname, basestring):
+        if not isinstance(hostname, str):
             raise TypeError("Expected str, got %s" % type(hostname))
 
         self.__subtype    = subtype
@@ -611,7 +611,7 @@ class DnsRegisterCERT(DNSRegisterAlgorithm):
         #
         # Check the certificate type
         #
-        if isinstance(certificate_type, basestring):
+        if isinstance(certificate_type, str):
             self.__cert_type_value = DnsRegisterCERT.text_to_cert(certificate_type)
             self.__cert_type_name  = DnsRegisterCERT.cert_to_text(self.__cert_type_value)
         elif isinstance(certificate_type, int):
@@ -619,7 +619,7 @@ class DnsRegisterCERT(DNSRegisterAlgorithm):
             self.__cert_type_value = DnsRegisterCERT.text_to_cert(self.__cert_type_name)
         else:
             raise TypeError("Not a valid certificate_type, got %s" % type(certificate_type))
-        if not isinstance(certificate, basestring):
+        if not isinstance(certificate, str):
             raise TypeError("Expected str, got %s" % type(certificate))
         if not isinstance(key_tag, int):
             raise TypeError("Expected int, got '%s'" % type(key_tag))
@@ -694,7 +694,7 @@ class DnsRegisterCERT(DNSRegisterAlgorithm):
         :return: From a numeric text, returns the integer value of the type of cert
         :rtype: int
         """
-        if not isinstance(cert, basestring):
+        if not isinstance(cert, str):
             raise TypeError("Expected basestring, got '%s'" % type(cert))
 
         if cert not in DnsRegisterCERT.CERT_TYPE_BY_NAME.values():
@@ -716,7 +716,7 @@ class DnsRegisterCNAME(DnsRegister):
         :param target: name of the pointer host.
         :type target: str
         """
-        if not isinstance(target, basestring):
+        if not isinstance(target, str):
             raise TypeError("Expected str, got %s" % type(target))
 
         self.__target = target
@@ -774,7 +774,7 @@ class DnsRegisterDNSKEY(DNSRegisterAlgorithm):
         """
         if not isinstance(flags, int):
             raise TypeError("Expected int, got '%s'" % type(flags))
-        if not isinstance(key, basestring):
+        if not isinstance(key, str):
             raise TypeError("Expected basestring, got '%s'" % type(key))
         if not isinstance(protocol, int):
             raise TypeError("Expected int, got '%s'" % type(protocol))
@@ -900,9 +900,9 @@ class DnsRegisterHINFO(DnsRegister):
         :param os: the OS type
         :type os: str
         """
-        if not isinstance(cpu, basestring):
+        if not isinstance(cpu, str):
             raise TypeError("Expected str, got %s" % type(cpu))
-        if not isinstance(os, basestring):
+        if not isinstance(os, str):
             raise TypeError("Expected str, got %s" % type(os))
 
         self.__cpu    = cpu
@@ -961,7 +961,7 @@ class DnsRegisterIPSECKEY(DNSRegisterAlgorithm):
         :param precedence: the precedence for this key data.
         :type precedence: int
         """
-        if not isinstance(gateway, basestring):
+        if not isinstance(gateway, str):
             raise TypeError("Expected int, got '%s'" % type(gateway))
         if isinstance(gateway_type, int):
             if gateway_type < 0 or gateway_type > 3:
@@ -1036,9 +1036,9 @@ class DnsRegisterISDN(DnsRegister):
         :param subaddress: the ISDN subaddress.
         :type subaddress: str
         """
-        if not isinstance(address, basestring):
+        if not isinstance(address, str):
             raise TypeError("Expected str, got %s" % type(address))
-        if not isinstance(subaddress, basestring):
+        if not isinstance(subaddress, str):
             raise TypeError("Expected basestring, got '%s'" % type(subaddress))
 
         self.__address       = address
@@ -1093,7 +1093,7 @@ class DnsRegisterLOC(DnsRegister):
         :type coordinates: str
         """
 
-        if not isinstance(coordinates, basestring):
+        if not isinstance(coordinates, str):
             raise TypeError("Expected str, got %s" % type(coordinates))
         if isinstance(latitude, tuple):
             for t in latitude:
@@ -1176,7 +1176,7 @@ class DnsRegisterMX(DnsRegister):
         :type preference: int
         """
 
-        if not isinstance(exchange, basestring):
+        if not isinstance(exchange, str):
             raise TypeError("Expected basestring, got '%s'" % type(exchange))
         if not isinstance(preference, int):
             raise TypeError("Expected int, got '%s'" % type(preference))
@@ -1253,7 +1253,7 @@ class DnsRegisterNAPTR(DnsRegister):
             raise TypeError("Expected int, got '%s'" % type(order))
         if not isinstance(preference, int):
             raise TypeError("Expected int, got '%s'" % type(preference))
-        if not isinstance(regex, basestring):
+        if not isinstance(regex, str):
             raise TypeError("Expected basestring, got '%s'" % type(regex))
         if not isinstance(replacement, str):
             raise TypeError("Expected str, got '%s'" % type(replacement))
@@ -1346,7 +1346,7 @@ class DnsRegisterNS(DnsRegister):
         :param target: server target
         :type target: str
         """
-        if not isinstance(target, basestring):
+        if not isinstance(target, str):
             raise TypeError("Expected basestring, got '%s'" % type(target))
 
         self.__target    = target
@@ -1394,7 +1394,7 @@ class DnsRegisterNSAP(DnsRegister):
         :type address: str
 
         """
-        if not isinstance(address, basestring):
+        if not isinstance(address, str):
             raise TypeError("Expected basestring, got '%s'" % type(address))
 
         self.__address    = address
@@ -1441,7 +1441,7 @@ class DnsRegisterNSEC(DnsRegister):
         :param next: the next server name
         :type next: str
         """
-        if not isinstance(next, basestring):
+        if not isinstance(next, str):
             raise TypeError("Expected basestring, got '%s'" % type(next))
 
         self.__next    = next
@@ -1622,7 +1622,7 @@ class DnsRegisterPTR(DnsRegister):
         :param target: server target
         :type target: str
         """
-        if not isinstance(target, basestring):
+        if not isinstance(target, str):
             raise TypeError("Expected basestring, got '%s'" % type(target))
 
         self.__target    = target
@@ -1673,9 +1673,9 @@ class DnsRegisterRP(DnsRegister):
         :type txt: str
         """
 
-        if not isinstance(mbox, basestring):
+        if not isinstance(mbox, str):
             raise TypeError("Expected basestring, got '%s'" % type(mbox))
-        if not isinstance(txt, basestring):
+        if not isinstance(txt, str):
             raise TypeError("Expected basestring, got '%s'" % type(txt))
 
         self.__mbox             = mbox
@@ -1766,13 +1766,13 @@ class DnsRegisterRRSIG(DNSRegisterAlgorithm):
         :type type_covered: int
         """
 
-        if not isinstance(expiration, long):
+        if not isinstance(expiration, int):
             raise TypeError("Expected long, got '%s'" % type(expiration))
         if not isinstance(key_tag, int):
             raise TypeError("Expected int, got '%s'" % type(key_tag))
         if not isinstance(labels, int):
             raise TypeError("Expected int, got '%s'" % type(labels))
-        if not isinstance(original_ttl, long):
+        if not isinstance(original_ttl, int):
             raise TypeError("Expected long, got '%s'" % type(original_ttl))
         if not isinstance(signer, str):
             raise TypeError("Expected str, got '%s'" % type(signer))
@@ -1880,9 +1880,9 @@ class DnsRegisterSOA(DnsRegister):
         :param expire: The zone's expiration value (in seconds)
         :type expire: int
         """
-        if not isinstance(mname, basestring):
+        if not isinstance(mname, str):
             raise TypeError("Expected str, got %s" % type(mname))
-        if not isinstance(rname, basestring):
+        if not isinstance(rname, str):
             raise TypeError("Expected str, got %s" % type(rname))
         if not isinstance(refresh, int):
             raise TypeError("Expected int, got '%s'" % type(refresh))
@@ -1972,7 +1972,7 @@ class DnsRegisterTXT(DnsRegister):
 
         if isinstance(strings, list):
             for l in strings:
-                if not isinstance(l, basestring):
+                if not isinstance(l, str):
                     raise TypeError("Expected str, got %s" % type(l))
         else:
             raise TypeError("Expected str, got %s" % type(strings))
@@ -2015,7 +2015,7 @@ class DnsRegisterSPF(DnsRegister):
 
         if isinstance(strings, list):
             for l in strings:
-                if not isinstance(l, basestring):
+                if not isinstance(l, str):
                     raise TypeError("Expected str, got %s" % type(l))
         else:
             raise TypeError("Expected str, got %s" % type(strings))
@@ -2065,7 +2065,7 @@ class DnsRegisterSRV(DnsRegister):
         :type port: int
         """
 
-        if not isinstance(target, basestring):
+        if not isinstance(target, str):
             raise TypeError("Expected basestring, got '%s'" % type(target))
         if not isinstance(priority, int):
             raise TypeError("Expected int, got '%s'" % type(priority))
@@ -2159,11 +2159,11 @@ class DnsRegisterWKS(DnsRegister):
         :type bitmap: str
         """
 
-        if not isinstance(address, basestring):
+        if not isinstance(address, str):
             raise TypeError("Expected basestring, got '%s'" % type(address))
-        if not isinstance(protocol, basestring):
+        if not isinstance(protocol, str):
             raise TypeError("Expected basestring, got '%s'" % type(protocol))
-        if not isinstance(bitmap, basestring):
+        if not isinstance(bitmap, str):
             raise TypeError("Expected basestring, got '%s'" % type(bitmap))
 
         self.__address             = address
@@ -2233,7 +2233,7 @@ class DnsRegisterX25(DnsRegister):
         :type address: str
         """
 
-        if not isinstance(address, basestring):
+        if not isinstance(address, str):
             raise TypeError("Expected str, got %s" % type(address))
 
         self.__address = address

@@ -159,7 +159,7 @@ def get_stage_display_name(stage):
     return _STAGE_DISPLAY_NAMES[ stage.strip().lower() ]
 
 get_stage_display_name.__doc__ %= "".join(
-    "\n         - %s" % x for x in _STAGE_DISPLAY_NAMES.iterkeys())
+    "\n         - %s" % x for x in iter(_STAGE_DISPLAY_NAMES.keys()))
 
 
 #------------------------------------------------------------------------------
@@ -190,7 +190,7 @@ def get_plugin_type_display_name(plugin_type):
     return _PLUGIN_TYPE_NAMES[ plugin_type.strip().lower() ]
 
 get_plugin_type_display_name.__doc__ %= "".join(
-    "\n         - %s" % x for x in _PLUGIN_TYPE_NAMES.iterkeys())
+    "\n         - %s" % x for x in iter(_PLUGIN_TYPE_NAMES.keys()))
 
 
 #------------------------------------------------------------------------------
@@ -233,7 +233,7 @@ def get_plugin_type_description(plugin_type):
     return _PLUGIN_TYPE_DESCRIPTIONS[ plugin_type.strip().lower() ]
 
 get_plugin_type_description.__doc__ %= "".join(
-    "\n         - %s" % x for x in _PLUGIN_TYPE_DESCRIPTIONS.iterkeys())
+    "\n         - %s" % x for x in iter(_PLUGIN_TYPE_DESCRIPTIONS.keys()))
 
 
 #------------------------------------------------------------------------------
@@ -620,7 +620,7 @@ class ReportPlugin (Plugin):
         if command:
             Logger.log_verbose("Launching command: %s" % command)
             args = shlex.split(command)
-            for i in xrange(len(args)):
+            for i in range(len(args)):
                 token = args[i]
                 p = token.find("$1")
                 while p >= 0:
@@ -724,7 +724,7 @@ def load_plugin_class_from_info(info):
         if not public_symbols:
             public_symbols = [
                 value
-                for (symbol, value) in module.__dict__.iteritems()
+                for (symbol, value) in iter(module.__dict__.items())
                 if not symbol.startswith("_")
             ]
             if not public_symbols:

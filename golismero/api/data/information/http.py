@@ -35,7 +35,7 @@ from ...text.text_utils import to_utf8
 from ...net.web_utils import ParsedURL, generate_user_agent
 
 import re
-import httplib
+import http.client
 
 
 #------------------------------------------------------------------------------
@@ -294,7 +294,7 @@ class HTTP_Headers (object):
         :returns: Header line (for indices) or value (for names).
         :rtype: str
         """
-        if type(key) in (int, long):
+        if type(key) == int:
             return "%s: %s\r\n" % self.__headers[key]
         try:
             key = key.lower()
@@ -828,12 +828,12 @@ class HTTP_Response (Capture):
         self.__version  = to_utf8( kwargs.get("version",  self.__version)  )
         if self.__status and not self.__reason:
             try:
-                self.__reason = httplib.responses[self.__status]
+                self.__reason = http.client.responses[self.__status]
             except Exception:
                 pass
         elif not self.__status and self.__reason:
             lower_reason = self.__reason.strip().lower()
-            for code, text in httplib.responses.iteritems():
+            for code, text in iter(http.client.responses.items()):
                 if text.lower() == lower_reason:
                     self.__status = str(code)
                     break
@@ -1042,7 +1042,7 @@ class HTTP_Response (Capture):
             self.__protocol = "HTTP"
             self.__version  = "0.9"
             self.__status   = "200"
-            self.__reason   = httplib.responses[200]
+            self.__reason   = http.client.responses[200]
             self.__data     = self.__raw_response
             return
 
@@ -1059,7 +1059,7 @@ class HTTP_Response (Capture):
         except Exception:
             proto_version, status = re.split("[ \t]+", raw_line, 1)
             try:
-                reason = httplib.responses[int(status)]
+                reason = http.client.responses[int(status)]
             except Exception:
                 reason = None
         if "/" in proto_version:

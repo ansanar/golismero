@@ -47,7 +47,7 @@ from ..messaging.message import Message
 from ..messaging.manager import MessageManager
 
 from os import getpid
-from thread import get_ident
+from _thread import get_ident
 from traceback import format_exc, print_exc
 from signal import signal, SIGINT, SIG_DFL
 
@@ -123,7 +123,7 @@ class Orchestrator (object):
         self.pluginManager.load_plugin_by_id(ui_plugin_id)
 
         # Set the user-defined arguments for the plugins.
-        for plugin_id, plugin_args in self.config.plugin_args.iteritems():
+        for plugin_id, plugin_args in iter(self.config.plugin_args.items()):
             self.pluginManager.set_plugin_args(plugin_id, plugin_args)
 
         # Create the UI manager.

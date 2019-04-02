@@ -46,7 +46,7 @@ from socket import gethostbyname, gethostbyname_ex
 
 
 def test_scope_example():
-    print "Testing scope with: www.example.com"
+    print("Testing scope with: www.example.com")
     main_config = OrchestratorConfig()
     main_config.ui_mode = "disabled"
     main_config.use_colors = False
@@ -54,7 +54,7 @@ def test_scope_example():
     audit_config.targets = ["http://www.example.com"]
     audit_config.include_subdomains = True
     with PluginTester(main_config, audit_config) as t:
-        print Config.audit_scope
+        print(Config.audit_scope)
 
         for token, flag in (
             (None, False),
@@ -94,7 +94,7 @@ def test_scope_example():
 
 
 def test_scope_localhost():
-    print "Testing scope with: localhost"
+    print("Testing scope with: localhost")
     main_config = OrchestratorConfig()
     main_config.ui_mode = "disabled"
     main_config.use_colors = False
@@ -103,7 +103,7 @@ def test_scope_localhost():
     audit_config.include_subdomains = True
     audit_config.allow_parent = True
     with PluginTester(main_config, audit_config) as t:
-        print Config.audit_scope
+        print(Config.audit_scope)
 
         for token, flag in (
             (None, False),

@@ -25,13 +25,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import os
 from os import path
 import re
-from StringIO import StringIO
+from io import StringIO
 
 AUTO_FIX = False
 ##AUTO_FIX = True
 
 def test_newlines_and_tabs():
-    print "Testing the source code format..."
+    print("Testing the source code format...")
 
     # Regexp to detect separator lines.
     separator = re.compile(r"^ *\#\-+ *\n$")
@@ -76,17 +76,17 @@ def test_newlines_and_tabs():
 
             # If tab characters are present, warn about it.
             if "\t" in data:
-                print "+ found tabs in file: %s" % relative
+                print("+ found tabs in file: %s" % relative)
 
             # If newline characters are not in Linux format, warn about it.
             if "\r\n" in data:
-                print "+ found Windows newlines in file: %s" % relative
+                print("+ found Windows newlines in file: %s" % relative)
                 if AUTO_FIX:
                     data = data.replace("\r\n", "\n")
                     with open(filename, "wb") as fd:
                         fd.write(data)
             elif "\r" in data:
-                print "+ found Mac newlines in file: %s" % relative
+                print("+ found Mac newlines in file: %s" % relative)
                 if AUTO_FIX:
                     data = data.replace("\r", "\n")
                     with open(filename, "wb") as fd:
@@ -94,7 +94,7 @@ def test_newlines_and_tabs():
 
             # If the file doesn't end with a newline character, warn about it.
             if not data.endswith("\n") and not data.endswith("\r"):
-                print "+ found file with no terminating newline: %s" % relative
+                print("+ found file with no terminating newline: %s" % relative)
                 if AUTO_FIX:
                     data += "\n"
                     with open(filename, "wb") as fd:
@@ -107,8 +107,8 @@ def test_newlines_and_tabs():
             for line in fake:
                 if line.strip() == "" and line != "\n":
                     if not warned:
-                        print "+ found file with bad blank lines: %s" \
-                              % relative
+                        print("+ found file with bad blank lines: %s" \
+                              % relative)
                         warned = True
                     line = "\n"
                 fixed.append(line)
@@ -125,8 +125,8 @@ def test_newlines_and_tabs():
                 if separator.match(line):
                     if len(line) != 80:
                         if not warned:
-                            print "+ found file with broken separators: %s" \
-                                  % relative
+                            print("+ found file with broken separators: %s" \
+                                  % relative)
                             warned = True
                         line = line.rstrip()
                         if len(line) < 79:
@@ -138,8 +138,8 @@ def test_newlines_and_tabs():
                             fixed[-1] != "\n" or fixed[-2] != "\n") and \
                                     not fixed[-1].lstrip().startswith("#"):
                         if not warned:
-                            print "+ found file with broken separators: %s" \
-                                  % relative
+                            print("+ found file with broken separators: %s" \
+                                  % relative)
                             warned = True
                         if fixed[-1] != "\n":
                             fixed.append("\n")
@@ -149,8 +149,8 @@ def test_newlines_and_tabs():
                     if len(fixed) > 2 and \
                                 fixed[-1] == fixed[-2] == fixed[-3] == "\n":
                         if not warned:
-                            print "+ found file with broken separators: %s" \
-                                  % relative
+                            print("+ found file with broken separators: %s" \
+                                  % relative)
                             warned = True
                         while len(fixed) > 2 and \
                                 fixed[-1] == fixed[-2] == fixed[-3] == "\n":
@@ -162,7 +162,7 @@ def test_newlines_and_tabs():
                     fd.write(data)
 
     # Done!
-    print "...done!"
+    print("...done!")
 
 # Run the test from the command line.
 if __name__ == "__main__":

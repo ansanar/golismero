@@ -104,7 +104,7 @@ def calculate_language_scores(text):
 
     :raises: TypeError
     """
-    if not isinstance(text, basestring):
+    if not isinstance(text, str):
         raise TypeError("Expected basestring, got '%s' instead" % type(text))
     if not text:
         return {}
@@ -150,7 +150,7 @@ def detect_language(text):
 
     :raises: TypeError
     """
-    if not isinstance(text, basestring):
+    if not isinstance(text, str):
         raise TypeError("Expected basestring, got '%s' instead" % type(text))
     if not text:
         return "unknown"
@@ -195,9 +195,9 @@ def number_to_words(n, locale="en", num_type="cardinal"):
     """
     if not isinstance(n, int):
         raise TypeError("Expected int, got '%s' instead" % type(n))
-    if not isinstance(locale, basestring):
+    if not isinstance(locale, str):
         raise TypeError("Expected basestring, got '%s' instead" % type(locale))
-    if not isinstance(num_type, basestring):
+    if not isinstance(num_type, str):
         raise TypeError("Expected basestring, got '%s' instead" % type(num_type))
     if num_type == "ordinal" and n < 0:
         raise ValueError("Can't get ordinal value from negative number")

@@ -93,7 +93,7 @@ class ShodanPlugin(TestingPlugin):
             key = self.get_api_key()
             api = WebAPI(key)
             shodan = api.host(ip)
-        except Exception, e:
+        except Exception as e:
             tb = traceback.format_exc()
             Logger.log_error("Error querying Shodan for host %s: %s" % (ip, str(e)))
             Logger.log_error_more_verbose(tb)

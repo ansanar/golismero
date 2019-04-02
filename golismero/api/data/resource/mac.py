@@ -80,7 +80,7 @@ class MAC(Resource):
             raise ValueError("Invalid %s: %r" % (self.display_name, address))
         address = ":".join(
             address[i:i+2]
-            for i in xrange(0, len(address) - 2, 2)
+            for i in range(0, len(address) - 2, 2)
         )
 
         # Save the address.

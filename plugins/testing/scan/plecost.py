@@ -73,7 +73,9 @@ def version_cmp(version1, version2):
     :rtype: int
     """
     tup = lambda x: [int(y) for y in (x+'.0.0.0.0').split('.')][:4]
-    return cmp(tup(version1),tup(version2))
+    a = tup(version1)
+    b = tup(version2)
+    return (a > b) - (a < b)
 
 
 #------------------------------------------------------------------------------
@@ -249,7 +251,7 @@ class PlecostPlugin(TestingPlugin):
             partial_plugin_url = "%s/%s" % (url, "wp-content/plugins/%s" % plugin_URI)
 
             # Test each URL with possible plugin version info
-            for target, regex in urls_to_test.iteritems():
+            for target, regex in iter(urls_to_test.items()):
 
                 plugin_url = "%s/%s" % (partial_plugin_url, target)
 
@@ -259,7 +261,7 @@ class PlecostPlugin(TestingPlugin):
                     p = HTTP.get_url(plugin_url, use_cache=False)
                     if p:
                         discard_data(p)
-                except Exception, e:
+                except Exception as e:
                     Logger.log_error_more_verbose("Error while download: '%s': %s" % (plugin_url, str(e)))
                     continue
 
@@ -340,7 +342,7 @@ class PlecostPlugin(TestingPlugin):
                 p = HTTP.get_url(url_wp_admin, use_cache=False, allow_redirects=False)
                 if p:
                     discard_data(p)
-            except Exception, e:
+            except Exception as e:
                 return False
 
             if p.status == "302" and "wp-login.php?redirect_to=" in p.headers.get("Location", ""):
@@ -426,7 +428,7 @@ class PlecostPlugin(TestingPlugin):
 
         # If Current version not found
         if current_version == "unknown":
-            for url_pre, regex in url_version.iteritems():
+            for url_pre, regex in iter(url_version.items()):
                 # URL to find wordpress version
                 url_current_version = urljoin(url, url_pre)
                 current_version_content = download(url_current_version)

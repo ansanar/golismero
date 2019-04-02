@@ -44,7 +44,7 @@ from ..messaging.message import Message
 
 from inspect import isclass
 from os import getpid, unlink
-from thread import get_ident
+from _thread import get_ident
 
 
 #------------------------------------------------------------------------------
@@ -319,7 +319,7 @@ class PluginTester(object):
 
                 # If the data is out of scope, don't run the plugin.
                 if not data.is_in_scope():
-                    print "Out of scope: skipped"
+                    print("Out of scope: skipped")
                     return []
 
                 # Make sure the plugin can actually process this type of data.

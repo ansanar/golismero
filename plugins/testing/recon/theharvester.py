@@ -38,7 +38,7 @@ from golismero.api.plugin import TestingPlugin
 
 import os, os.path
 import socket
-import StringIO
+import io
 import sys
 import traceback
 import warnings
@@ -94,7 +94,7 @@ class HarvesterPlugin(TestingPlugin):
                 Logger.log_verbose("Searching keyword %r in %s" % (word, engine))
                 self.update_status(progress=float(step * 80) / total)
                 emails, hosts = self.search(engine, word, limit)
-            except Exception, e:
+            except Exception as e:
                 t = traceback.format_exc()
                 Logger.log_error(str(e))
                 Logger.log_error_more_verbose(t)
@@ -126,7 +126,7 @@ class HarvesterPlugin(TestingPlugin):
             emails_found.add(address)
             try:
                 data = Email(address)
-            except Exception, e:
+            except Exception as e:
                 warnings.warn("Cannot parse email address: %r" % address)
                 continue
             with warnings.catch_warnings():
@@ -238,7 +238,7 @@ class HarvesterPlugin(TestingPlugin):
         search_fn  = getattr(search_mod, "search_%s" % engine)
 
         # Run the search, hiding all the prints.
-        fd = StringIO.StringIO()
+        fd = io.StringIO()
         old_out, old_err = sys.stdout, sys.stderr
         try:
             sys.stdout, sys.stderr = fd, fd
@@ -259,14 +259,14 @@ class HarvesterPlugin(TestingPlugin):
         if hasattr(results, "emails"):
             try:
                 emails = results.emails
-            except Exception, e:
+            except Exception as e:
                 t = traceback.format_exc()
                 Logger.log_error(str(e))
                 Logger.log_error_more_verbose(t)
         if hasattr(results, "hostnames"):
             try:
                 hosts = results.hostnames
-            except Exception, e:
+            except Exception as e:
                 t = traceback.format_exc()
                 Logger.log_error(str(e))
                 Logger.log_error_more_verbose(t)

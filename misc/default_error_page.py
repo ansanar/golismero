@@ -74,7 +74,7 @@ class DefaultErrorPagePlugin(TestingPlugin):
 
         # Starting the search
         total = float(len(signatures))
-        for step, (server_name, server_page) in enumerate(signatures.iteritems()):
+        for step, (server_name, server_page) in enumerate(iter(signatures.items())):
 
             # Update status
             progress = float(step) / total

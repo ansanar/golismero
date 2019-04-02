@@ -83,7 +83,7 @@ basic = (
 )
 
 def test_basic_urls():
-    print "Testing basic URL parsing..."
+    print("Testing basic URL parsing...")
     for url in basic:
         ##pprint(parse_url(url).url)
         assert parse_url(url).url == url
@@ -258,20 +258,20 @@ simple = (
 
 # Test of the URL parser.
 def test_url_parser():
-    print "Testing URL parsing for all properties..."
+    print("Testing URL parsing for all properties...")
     for case in simple:
         url = case['url']
         d = ParsedURL(url)
-        for key, value in case.iteritems():
+        for key, value in iter(case.items()):
             try:
                 assert getattr(d, key) == value
             except AssertionError:
-                print "-" * 79
-                print "Failed test case: %r" % url
-                print "Attribute name: %r" % key
-                print "Expected value: %r" % value
-                print "Got instead:    %r" % getattr(d, key)
-                print "-" * 79
+                print("-" * 79)
+                print("Failed test case: %r" % url)
+                print("Attribute name: %r" % key)
+                print("Expected value: %r" % value)
+                print("Got instead:    %r" % getattr(d, key))
+                print("-" * 79)
                 raise
 
 
@@ -351,7 +351,7 @@ equivalent = (
 )
 
 def test_equivalent_urls():
-    print "Testing URL sanitization..."
+    print("Testing URL sanitization...")
     for url_list in equivalent:
         normalized = set()
         for url in url_list:
@@ -374,7 +374,7 @@ relative = (
 )
 
 def test_relative_urls():
-    print "Testing relative URL parsing..."
+    print("Testing relative URL parsing...")
     for rel, ab in relative:
         ##print rel
         ##print parse_url(relative, 'http://example.com/path/').url
@@ -397,7 +397,7 @@ errors = (
 )
 
 def test_url_errors():
-    print "Testing URL parsing errors..."
+    print("Testing URL parsing errors...")
     for url in errors:
         try:
             parse_url(url).url
@@ -408,7 +408,7 @@ def test_url_errors():
 
 # Some manual testing.
 def test_url_parser_custom():
-    print "Testing URL modification and reparsing..."
+    print("Testing URL modification and reparsing...")
 
     # Relative URLs.
     assert ParsedURL("/index.html", base_url="http://www.example.com").url == "http://www.example.com/index.html"

@@ -35,21 +35,8 @@ from golismero.api.plugin import ReportPlugin
 from datetime import datetime
 from warnings import warn
 
-try:
-    # The fastest JSON parser available for Python.
-    # Too bad it has a different interface!
-    from cjson import encode
-    def dumps(obj, **kwargs):
-        return encode(obj)
-    def dump(obj, fp, **kwargs):
-        fp.write( encode(obj) )
-except ImportError:
-    try:
-        # Faster than the built-in module, usually found.
-        from simplejson import dump, dumps
-    except ImportError:
-        # Built-in module since Python 2.6, very very slow!
-        from json import dump, dumps
+# Faster than the built-in module, usually found.
+from simplejson import dump, dumps
 
 
 #------------------------------------------------------------------------------
@@ -92,7 +79,7 @@ class JSONOutput(ReportPlugin):
         """
         beautify = Config.audit_config.boolean(
             Config.plugin_args.get("beautify", "no"))
-        with open(output_file, "wb") as fp:
+        with open(output_file, "w") as fp:
             if beautify:
                 dump(report_data, fp, sort_keys=True, indent=4)
             else:
@@ -274,7 +261,7 @@ class JSONOutput(ReportPlugin):
         if identities is None:
             identities = list(Database.keys(data_type, data_subtype))
         if identities:
-            for page in xrange(0, len(identities), 100):
+            for page in range(0, len(identities), 100):
                 for data in Database.get_many(identities[page:page + 100]):
                     yield data
 

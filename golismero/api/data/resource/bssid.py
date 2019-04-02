@@ -100,7 +100,7 @@ class BSSID(MAC):
         :type essid: str
         """
         essid = to_utf8(essid)
-        if not isinstance(essid, basestring):
+        if not isinstance(essid, str):
             raise TypeError("Expected string, got %r instead" % type(essid))
         self.__essid = essid
 

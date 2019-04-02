@@ -53,7 +53,7 @@ __all__ = ["pmap", "setInterval", "TaskGroup", "WorkerPool", "Counter"]
 
 from .config import Config
 
-from thread import get_ident
+from _thread import get_ident
 from threading import RLock, Semaphore, Thread, Event, Timer
 
 
@@ -64,7 +64,7 @@ class Counter (object):
     """
 
     def __init__(self, init_val = 0):
-        if type(init_val) not in (int, long, float):
+        if type(init_val) not in (int, float):
             raise TypeError("Expected a number, got %r instead" % type(init_val))
         self.__value = init_val
         self.__lock  = RLock()
@@ -79,21 +79,21 @@ class Counter (object):
         return self.sub(1)
 
     def add(self, offset):
-        if type(offset) not in (int, long, float):
+        if type(offset) not in (int, float):
             raise TypeError("Expected a number, got %r instead" % type(offset))
         with self.__lock:
             self.__value += offset
             return self.__value
 
     def sub(self, offset):
-        if type(offset) not in (int, long, float):
+        if type(offset) not in (int, float):
             raise TypeError("Expected a number, got %r instead" % type(offset))
         with self.__lock:
             self.__value -= offset
             return self.__value
 
     def setvalue(self, value):
-        if type(value) not in (int, long, float):
+        if type(value) not in (int, float):
             raise TypeError("Expected a number, got %r instead" % type(value))
         with self.__lock:
             old_value = self.__value
@@ -498,9 +498,9 @@ class TaskGroup(object):
         if not output:
             return [None] * len(self.data)
         get = output.get
-        max_index = max(output.iterkeys())
+        max_index = max(iter(output.keys()))
         max_index = max(max_index, len(self.data) - 1)
-        return [ get(i) for i in xrange(max_index + 1) ]
+        return [ get(i) for i in range(max_index + 1) ]
 
 
 #------------------------------------------------------------------------------
@@ -720,7 +720,7 @@ class WorkerPool(Thread):
         add2 = self.__all_workers.add
         callback = self._worker_thread_finished
         GT = WorkerThread
-        for _ in xrange(pool_size):
+        for _ in range(pool_size):
             l_thread = GT()
             l_thread._callback = callback
             add1(l_thread)

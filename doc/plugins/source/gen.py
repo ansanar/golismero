@@ -57,11 +57,11 @@ def gen():
     for plugin_type in categories:
         with open(path.join(here, plugin_type + ".rst"), "w") as f:
             name = get_plugin_type_display_name(plugin_type)
-            print >>f, name
-            print >>f, "*" * len(name)
-            print >>f, ""
-            print >>f, get_plugin_type_description(plugin_type)
-            print >>f, ""
+            print(name, file=f)
+            print("*" * len(name), file=f)
+            print("", file=f)
+            print(get_plugin_type_description(plugin_type), file=f)
+            print("", file=f)
             plugins = pluginManager.get_plugins(plugin_type)
             if plugins:
                 for plugin_id in sorted(plugins.keys()):
@@ -70,35 +70,35 @@ def gen():
                     description = plugin_info.description
                     description = description.replace("\r\n", "\n")
                     description = description.replace("\n", "\n\n")
-                    print >>f, display_name
-                    print >>f, "=" * len(display_name)
-                    print >>f, ""
-                    print >>f, description
-                    print >>f, ""
+                    print(display_name, file=f)
+                    print("=" * len(display_name), file=f)
+                    print("", file=f)
+                    print(description, file=f)
+                    print("", file=f)
                     if plugin_info.plugin_args:
                         width_key = 17
                         width_value = 17
-                        for key, value in plugin_info.plugin_args.iteritems():
+                        for key, value in iter(plugin_info.plugin_args.items()):
                             if key in plugin_info.plugin_passwd_args:
                                 value = "\\*" * 16
                             width_key = max(width_key, len(key))
                             width_value = max(width_value, len(value))
-                        print >>f, "%s %s" % (("=" * width_key), ("=" * width_value))
-                        print >>f, ("**Argument name**%s **Default value**%s" % ((" " * (width_key - 17)), (" " * (width_value - 17)))).rstrip()
-                        print >>f, "%s %s" % (("-" * width_key), ("-" * width_value))
-                        for key, value in plugin_info.plugin_args.iteritems():
+                        print("%s %s" % (("=" * width_key), ("=" * width_value)), file=f)
+                        print(("**Argument name**%s **Default value**%s" % ((" " * (width_key - 17)), (" " * (width_value - 17)))).rstrip(), file=f)
+                        print("%s %s" % (("-" * width_key), ("-" * width_value)), file=f)
+                        for key, value in iter(plugin_info.plugin_args.items()):
                             value = value.replace("\r\n", "\n")
                             value = value.replace("\n", " ")
                             if key in plugin_info.plugin_passwd_args:
                                 value = "\\*" * 16
                             pad_key = (" " * (width_key - len(key)))
                             pad_value = (" " * (width_value - len(value)))
-                            print >>f, ("%s%s %s%s" % (key, pad_key, value, pad_value)).rstrip()
-                        print >>f, ("%s %s" % (("=" * width_key), ("=" * width_value))).rstrip()
-                        print >>f, ""
+                            print(("%s%s %s%s" % (key, pad_key, value, pad_value)).rstrip(), file=f)
+                        print(("%s %s" % (("=" * width_key), ("=" * width_value))).rstrip(), file=f)
+                        print("", file=f)
             else:
-                print >>f, "There are currently no plugins in this category."
-                print >>f, ""
+                print("There are currently no plugins in this category.", file=f)
+                print("", file=f)
         with open(path.join(here, plugin_type + ".rst"), "rU") as f:
             data = f.read()
         with open(path.join(here, plugin_type + ".rst"), "wb") as f:

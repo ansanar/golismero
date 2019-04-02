@@ -27,7 +27,7 @@ __all__ = ["YAMLOutput"]
 from golismero.api.plugin import import_plugin
 json = import_plugin("json.py")
 
-from StringIO import StringIO
+from io import StringIO
 
 from yaml import dump
 try:

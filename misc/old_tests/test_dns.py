@@ -47,35 +47,35 @@ from golismero.main.testing import PluginTester
 def test_all_registers():
     with PluginTester():
 
-        print
+        print()
 
         HOSTS = ["ns1.google.com", "twitter.com", "bing.com", "tuenti.es", "facebook.com", "google.com", "terra.es"]
 
         for l_host in HOSTS:
 
-            print
-            print "Host: %s" % l_host
-            print "^" * (len(l_host) + 7)
+            print()
+            print("Host: %s" % l_host)
+            print("^" * (len(l_host) + 7))
 
             for l_dns_type in DnsRegister.DNS_TYPES:
 
                 r = DNS.resolve(l_host, l_dns_type)
                 if r:
-                    print
-                    print "   Type: " + l_dns_type
-                    print "   " + ("=" * (len(l_dns_type ) + 6))
+                    print()
+                    print("   Type: " + l_dns_type)
+                    print("   " + ("=" * (len(l_dns_type ) + 6)))
 
                     for c in r:
-                        for k, v in c.to_dict().iteritems():
-                            print "     - %s: %s" % (k, v)
-                        print "   " + ("-" * 30)
+                        for k, v in iter(c.to_dict().items()):
+                            print("     - %s: %s" % (k, v))
+                        print("   " + ("-" * 30))
 
 
 #------------------------------------------------------------------------------
 def test_zone_transfer():
     with PluginTester():
-        print DNS.zone_transfer("173.194.34.224")
-        print DNS.zone_transfer("zonetransfer.me", ["ns12.zoneedit.com"])
+        print(DNS.zone_transfer("173.194.34.224"))
+        print(DNS.zone_transfer("zonetransfer.me", ["ns12.zoneedit.com"]))
 
 
 #------------------------------------------------------------------------------
@@ -90,11 +90,11 @@ def test_a_aaaa():
             for kk in r:
 
                 if kk.type == "CNAME":
-                    print kk.target
+                    print(kk.target)
                 if kk.type == "A":
-                    print kk.address
+                    print(kk.address)
 
-            print ""
+            print("")
 
 
 #------------------------------------------------------------------------------
@@ -108,16 +108,16 @@ def test_ptr():
 
         for ip in ips:
             for t in DNS.get_ptr(ip):
-                print t.target
+                print(t.target)
 
 
 #------------------------------------------------------------------------------
 if __name__ == "__main__":
-    print
-    print "-" * 79
+    print()
+    print("-" * 79)
     test_all_registers()
     test_zone_transfer()
     test_a_aaaa()
     test_ptr()
-    print "-" * 79
-    print
+    print("-" * 79)
+    print()

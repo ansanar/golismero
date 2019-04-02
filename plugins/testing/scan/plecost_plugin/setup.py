@@ -33,7 +33,7 @@ try:
 except ImportError:
     import pickle as Pickle
 
-from urllib2 import urlopen, URLError
+from urllib.request import urlopen, URLError
 from sys import exit
 from time import sleep
 from random import randint
@@ -62,14 +62,14 @@ def load_cve_info():
 
     try:
         wpage = urlopen(cve_url).read()
-    except URLError, e:
-        print "[!] Can't obtain CVE database."
+    except URLError as e:
+        print("[!] Can't obtain CVE database.")
         return None
 
     try:
         wpage = decode(wpage, detect(wpage)["encoding"])
-    except UnicodeEncodeError, e:
-        print "[!] Unicode error while processing CVE url. Error: %s." % e
+    except UnicodeEncodeError as e:
+        print("[!] Unicode error while processing CVE url. Error: %s." % e)
         return None
 
     results = {}
@@ -97,9 +97,9 @@ def generate_plugin_db(args):
     max_plugins = args.MAX_PLUGINS
 
     if os.path.isdir(file_out):
-        print
-        print "[!] Output file must be regular file, not a directory."
-        print
+        print()
+        print("[!] Output file must be regular file, not a directory.")
+        print()
         exit(1)
 
     # Get CVE info
@@ -117,15 +117,15 @@ def generate_plugin_db(args):
 
         total_plugins = 1
 
-        for i in xrange(1, 4000):
+        for i in range(1, 4000):
 
             # 3 tries for each request
-            for x in xrange(1, 6):
+            for x in range(1, 6):
                 try:
                     url = WPlugins_URL % i
                     wpage = urlopen(url).read()
-                except URLError, e:
-                    print "[!] Error while getting URL: %s. Attempt %s." % (url, x)
+                except URLError as e:
+                    print("[!] Error while getting URL: %s. Attempt %s." % (url, x))
                     sleep(randint(1, 4))
 
                     if x == 6:
@@ -134,13 +134,13 @@ def generate_plugin_db(args):
                         continue
 
             if debug:
-                print "[i] Page %s/4000 (%s)" % (i, url)
+                print("[i] Page %s/4000 (%s)" % (i, url))
 
             # Fix err
             try:
                 wpage = decode(wpage, detect(wpage)["encoding"])
-            except UnicodeEncodeError, e:
-                print "[!] Unicode error while processing url '%s'. Error: %s." % (url, e)
+            except UnicodeEncodeError as e:
+                print("[!] Unicode error while processing url '%s'. Error: %s." % (url, e))
                 continue
 
             # Parse
@@ -149,7 +149,7 @@ def generate_plugin_db(args):
             # For echa plugin
             for j, plugin_info in enumerate(bs.findAll("div", attrs={"class": "plugin-block"})):
 
-                plugin_info = unicode(plugin_info)
+                plugin_info = str(plugin_info)
 
                 #
                 # Plugin name and URL
@@ -158,7 +158,7 @@ def generate_plugin_db(args):
                 plugin_url = None
                 plugin_name = None
                 if plugin_n_t is None:
-                    print "[iii] REGEX_PLUGIN_NAME can't found info for string: \n-------\n%s" % plugin_info
+                    print("[iii] REGEX_PLUGIN_NAME can't found info for string: \n-------\n%s" % plugin_info)
                 else:
                     plugin_url = plugin_n_t.group(2) if len(plugin_n_t.groups()) >= 2 else None
                     plugin_name = plugin_n_t.group(4) if len(plugin_n_t.groups()) >= 4 else None
@@ -180,14 +180,14 @@ def generate_plugin_db(args):
                 #
                 plugin_version = REGEX_PLUGIN_VERSION.search(plugin_info)
                 if plugin_version is None:
-                    print "[iii] REGEX_PLUGIN_VERSION can't found info for string: \n-------\n%s" % plugin_info
+                    print("[iii] REGEX_PLUGIN_VERSION can't found info for string: \n-------\n%s" % plugin_info)
                 else:
                     plugin_version = plugin_version.group(2)
 
                 # Plugin is repeated and already processed?
                 if plugin_url in already_processed:
                     if debug:
-                        print "  |-- [ii] Already processed plugin '%s'. Skipping" % plugin_url
+                        print("  |-- [ii] Already processed plugin '%s'. Skipping" % plugin_url)
                     continue
 
                 #
@@ -195,15 +195,15 @@ def generate_plugin_db(args):
                 #
                 if plugin_url is None or plugin_version is None:
                     if debug:
-                        print "   |-- [ii] Not enough information to store plugin for:\n%s" % plugin_info
+                        print("   |-- [ii] Not enough information to store plugin for:\n%s" % plugin_info)
                     continue
 
                 if debug:
-                    print "  |-- %s - Processing plugin: %s" % (total_plugins, plugin_url)
+                    print("  |-- %s - Processing plugin: %s" % (total_plugins, plugin_url))
 
                 # Looking for CVEs for this plugin
                 cves = []
-                for k, v in CVE_info.iteritems():
+                for k, v in iter(CVE_info.items()):
                     if plugin_name.lower() in v.lower():
                         cves.append(k)
 

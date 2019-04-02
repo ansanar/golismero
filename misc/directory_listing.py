@@ -75,7 +75,7 @@ class DirectoryListingPlugin(TestingPlugin):
         # Starting the search
         total = float(len(signatures))
 
-        for step, (server_name, regex) in enumerate(signatures.iteritems()):
+        for step, (server_name, regex) in enumerate(iter(signatures.items())):
 
             # Update status
             progress = (step / total) * 100

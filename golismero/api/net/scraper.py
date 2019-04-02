@@ -44,7 +44,7 @@ __all__ = [
 
 from .web_utils import parse_url, urldefrag, urljoin
 
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 from warnings import warn
 
 import re
@@ -128,7 +128,7 @@ def extract_from_text(text, base_url = None, only_links = True):
         return set()
 
     # Check the type.
-    if not isinstance(text, basestring):
+    if not isinstance(text, str):
         raise TypeError("Expected string, got %r instead" % type(text))
 
     # Set where the URLs will be collected.

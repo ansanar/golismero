@@ -170,12 +170,12 @@ class NmapScanPlugin(TestingPlugin):
                     results.extend( cls.parse_nmap_host(host, hostmap) )
 
                 # On error, log the exception and continue.
-                except Exception, e:
+                except Exception as e:
                     Logger.log_error_verbose(str(e))
                     Logger.log_error_more_verbose(format_exc())
 
         # On error, log the exception.
-        except Exception, e:
+        except Exception as e:
             Logger.log_error_verbose(str(e))
             Logger.log_error_more_verbose(format_exc())
 
@@ -207,11 +207,11 @@ class NmapScanPlugin(TestingPlugin):
         # Get the timestamp.
         timestamp = host.get("endtime")
         if timestamp:
-            timestamp = long(timestamp)
+            timestamp = int(timestamp)
         if not timestamp:
             timestamp = host.get("starttime")
             if timestamp:
-                timestamp = long(timestamp)
+                timestamp = int(timestamp)
 
         # Get all the IP addresses. Skip the MAC addresses.
         ip_addresses = []
@@ -337,7 +337,7 @@ class NmapScanPlugin(TestingPlugin):
                         ttl = hops.keys()
                         sane_hops = tuple(
                             hops.get(i, None)
-                            for i in xrange(min(*ttl), max(*ttl) + 1)
+                            for i in range(min(*ttl), max(*ttl) + 1)
                         )
                     else:
                         sane_hops = ()

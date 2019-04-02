@@ -536,7 +536,7 @@ class _data_metaclass(type):
         super(_data_metaclass, cls).__init__(name, bases, namespace)
 
         # Validate all mergeable properties.
-        for propname, prop in cls.__dict__.iteritems():
+        for propname, prop in iter(cls.__dict__.items()):
             if merge.is_mergeable_property(prop):
                 prop.validate(cls, propname)
 
@@ -576,7 +576,7 @@ class _data_metaclass(type):
                 data_subtype = modulename
             break
         if cls.data_subtype is None:
-            print ("*" * 20) + data_subtype
+            print(("*" * 20) + data_subtype)
         cls.data_subtype = data_subtype
 
         # Maintain the aliases for now. Maybe we should deprecate them.
@@ -718,14 +718,11 @@ class Entity(object):
 
 
 #------------------------------------------------------------------------------
-class Data(Entity):
+class Data(Entity, metaclass=_data_metaclass):
     """
     Base class for all data entities.
     This is the common interface for Information, Resource and Vulnerability.
     """
-
-    __metaclass__ = _data_metaclass
-
 
     #--------------------------------------------------------------------------
     # Data types
@@ -824,10 +821,10 @@ class Data(Entity):
         :rtype: set(tuple(int, str, str))
         """
         links = set()
-        for data_type, tmp in self._linked.iteritems():
+        for data_type, tmp in iter(self._linked.items()):
             if data_type is None:
                 continue
-            for data_subtype, tmp2 in tmp.iteritems():
+            for data_subtype, tmp2 in iter(tmp.items()):
                 if data_subtype is None:
                     continue
                 for identity in tmp2:
@@ -963,15 +960,8 @@ class Data(Entity):
                 value = list(value)
             elif isinstance(value, int):
                 value = int(value)
-            elif isinstance(value, long):
-                try:
-                    value = int(value)
-                except Exception:
-                    value = long(value)
             elif isinstance(value, float):
                 value = float(value)
-            elif isinstance(value, unicode):
-                value = value.encode("utf-8", "replace")
             elif value is None:
                 value = ""
             else:
@@ -1063,17 +1053,10 @@ class Data(Entity):
                 value = list(value)
             elif isinstance(value, int):
                 value = int(value)
-            elif isinstance(value, long):
-                try:
-                    value = int(value)
-                except Exception:
-                    value = long(value)
             elif isinstance(value, float):
                 value = float(value)
             elif isinstance(value, str):
                 value = str(value)
-            elif isinstance(value, unicode):
-                value = value.encode("utf-8", "replace")
 
             # Add the property name and value to the dictionary.
             properties[name] = value
@@ -1115,7 +1098,7 @@ class Data(Entity):
         # instance = EmptyNewStyleClass()
         # instance.__class__ = cls
         # inheritance = getmro(cls)
-        # for name, value in properties.iteritems():
+        # for name, value in iter(properties.items()):
         #     if name not in (
         #         "class", "links", "data_type", "data_subtype", "display_name",
         #     ):
@@ -1204,7 +1187,7 @@ class Data(Entity):
                     value = prop.__get__(self)
                     if value is not None:
                         # ASCII or UTF-8 is assumed for all strings!
-                        if isinstance(value, unicode):
+                        if isinstance(value, str):
                             try:
                                 value = value.encode("UTF-8")
                             except UnicodeError:
@@ -1323,13 +1306,13 @@ class Data(Entity):
         if reverse:
             for data_type, new_subdict in new_data._linked.items():
                 target_subdict = old_data._linked[data_type].copy()
-                for data_subtype, identity_set in new_subdict.iteritems():
+                for data_subtype, identity_set in iter(new_subdict.items()):
                     target_subdict[data_subtype] = target_subdict[data_subtype].union(identity_set)
                 new_data._linked[data_type] = target_subdict
         else:
-            for data_type, new_subdict in new_data._linked.iteritems():
+            for data_type, new_subdict in iter(new_data._linked.items()):
                 my_subdict = old_data._linked[data_type]
-                for data_subtype, identity_set in new_subdict.iteritems():
+                for data_subtype, identity_set in iter(new_subdict.items()):
                     my_subdict[data_subtype].update(identity_set)
 
 
@@ -1807,7 +1790,7 @@ class Relationship(object):
             classes = (class1, class2)
 
             def __new__(cls, *args, **kwargs):
-                return object.__new__(cls, *args, **kwargs)
+                return object.__new__(cls)
 
             def __init__(self, instance1, instance2):
                 if not instance1.is_instance(self.classes[0]):
@@ -1866,7 +1849,7 @@ class Relationship(object):
                     data_subtype_l = clazz.classes[0].data_subtype
                     data_type_r    = clazz.classes[1].data_type
                     data_subtype_r = clazz.classes[1].data_subtype
-                except AttributeError, e:
+                except AttributeError as e:
                     return False
                 except IndexError:
                     return False
@@ -2268,9 +2251,9 @@ class _LocalDataCache(Singleton):
 
             # Warn for data being instanced but not returned nor referenced.
             # Do not warn for discarded nor autogenerated in this case.
-            orphan = set(self.__new_data.iterkeys())
+            orphan = set(iter(self.__new_data.keys()))
             orphan.difference_update(self.__discarded)   # discarded
-            orphan.difference_update(graph.iterkeys())   # returned + referenced
+            orphan.difference_update(iter(graph.keys()))   # returned + referenced
             orphan.difference_update(self.__autogen)     # autogenerated
             if orphan:
                 msg = ("Data created by plugin, but not referenced"
@@ -2283,7 +2266,7 @@ class _LocalDataCache(Singleton):
                 warn(msg, OrphanedResultsWarning)
 
             # Remove discarded elements.
-            discarded = self.__discarded.intersection(graph.iterkeys())
+            discarded = self.__discarded.intersection(iter(graph.keys()))
             for data_id in discarded:
                 del graph[data_id]
 
@@ -2291,7 +2274,7 @@ class _LocalDataCache(Singleton):
             # Data out of scope but referenced is kept.
             scope_map = [
                 (d.is_in_scope(), d.identity, d.links)
-                for d in graph.itervalues()
+                for d in iter(graph.values())
             ]
             out_scope_map = {
                 identity: links
@@ -2304,9 +2287,9 @@ class _LocalDataCache(Singleton):
                     for is_in_scope, identity, links in scope_map
                     if is_in_scope
                 }
-                ids_to_check = list(out_scope_map.iterkeys())
-                ids_to_keep  = set(in_scope_map.iterkeys())
-                for links in in_scope_map.itervalues():
+                ids_to_check = list(iter(out_scope_map.keys()))
+                ids_to_keep  = set(iter(in_scope_map.keys()))
+                for links in iter(in_scope_map.values()):
                     ids_to_keep.update(links)
                 changed = True
                 while changed and ids_to_check:
@@ -2329,7 +2312,7 @@ class _LocalDataCache(Singleton):
             # No warnings for autogenerated data, though.
             out_of_scope = [
                 data
-                for data in graph.itervalues()
+                for data in iter(graph.values())
                 if data.identity not in self.__autogen and
                    not data.is_in_scope()
             ]

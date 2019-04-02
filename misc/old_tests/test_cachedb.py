@@ -54,23 +54,23 @@ def test_cachedb_consistency():
     disk.clean(audit)
     try:
 
-        print "Testing consistency of in-memory and disk caches..."
-        for x in xrange(100):
+        print("Testing consistency of in-memory and disk caches...")
+        for x in range(100):
             key = generate_random_string(10)
             data = generate_random_string(100)
             helper_test_cachedb_consistency(mem, key, data)
             helper_test_cachedb_consistency(disk, key, data)
 
-        print "Testing disk cache compacting and dumping..."
+        print("Testing disk cache compacting and dumping...")
         disk.compact()
         disk.dump("test_cachedb.sql")
 
-        print "Cleaning up the memory cache..."
+        print("Cleaning up the memory cache...")
         mem.clean(audit)
         del mem
 
     finally:
-        print "Cleaning up the disk cache..."
+        print("Cleaning up the disk cache...")
         try:
             disk.clean(audit)
         finally:
@@ -106,46 +106,46 @@ def test_cachedb_stress():
     disk.clean(audit)
     try:
 
-        print "Stress testing the disk cache..."
+        print("Stress testing the disk cache...")
         helper_cachedb_stress(disk, 10)
         helper_cachedb_stress(disk, 20)
         helper_cachedb_stress(disk, 30)
         helper_cachedb_stress(disk, 100)
 
     finally:
-        print "Cleaning up the disk cache..."
+        print("Cleaning up the disk cache...")
         try:
             disk.clean(audit)
         finally:
             disk.close()
 
 def helper_cachedb_stress(disk, n):
-    print "  Testing %d items..." % (n * 2)
+    print("  Testing %d items..." % (n * 2))
     data1 = "A" * 10000000
     data2 = "B" * 10000000
     keys = set()
-    for x in xrange(n):
+    for x in range(n):
         key = generate_random_string()
         keys.add(key)
     t1 = time.time()
-    print "  -> Writing..."
+    print("  -> Writing...")
     for key in keys:
         disk.set(audit, key, data1, protocol="http")
         disk.set(audit, key, data2, protocol="https")
     t2 = time.time()
-    print "  -- Checking..."
+    print("  -- Checking...")
     for key in keys:
         assert disk.exists(audit, key, protocol="http")
         assert disk.exists(audit, key, protocol="https")
     t3 = time.time()
-    print "  <- Reading..."
+    print("  <- Reading...")
     for key in keys:
         assert disk.get(audit, key, protocol="http") != disk.get(audit, key, protocol="https")
     t4 = time.time()
-    print "  Write time: %d seconds (%f seconds per item)" % (t2 - t1, (t2 - t1) / (n * 2.0))
-    print "  Check time: %d seconds (%f seconds per item)" % (t3 - t2, (t3 - t2) / (n * 2.0))
-    print "  Read time:  %d seconds (%f seconds per item)" % (t4 - t3, (t4 - t3) / (n * 2.0))
-    print "  Total time: %d seconds (%f seconds per item)" % (t4 - t1, (t4 - t1) / (n * 2.0))
+    print("  Write time: %d seconds (%f seconds per item)" % (t2 - t1, (t2 - t1) / (n * 2.0)))
+    print("  Check time: %d seconds (%f seconds per item)" % (t3 - t2, (t3 - t2) / (n * 2.0)))
+    print("  Read time:  %d seconds (%f seconds per item)" % (t4 - t3, (t4 - t3) / (n * 2.0)))
+    print("  Total time: %d seconds (%f seconds per item)" % (t4 - t1, (t4 - t1) / (n * 2.0)))
 
 
 # Run all tests from the command line.

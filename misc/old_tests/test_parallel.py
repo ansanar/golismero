@@ -41,7 +41,7 @@ if path.exists(thirdparty_libs):
 from golismero.api.parallel import *
 from golismero.main.testing import PluginTester
 
-from thread import get_ident
+from _thread import get_ident
 from threading import enumerate as thread_list
 from random import randint
 from time import sleep, time
@@ -49,7 +49,7 @@ from time import sleep, time
 
 # Tests the parallel execution with random data.
 def test_pmap():
-    print "Testing parallel execution with random data..."
+    print("Testing parallel execution with random data...")
     with PluginTester(autoinit=False) as t:
         t.orchestrator_config.use_colors = False
         t.orchestrator_config.ui_mode = "disabled"
@@ -57,8 +57,8 @@ def test_pmap():
         t.init_environment()
         t_list = thread_list()
         func = lambda x: x
-        for i in xrange(20):
-            input_data   = [randint(-10, 10) for x in xrange(randint(10, 200))]
+        for i in range(20):
+            input_data   = [randint(-10, 10) for x in range(randint(10, 200))]
             output_data  = pmap(func, input_data)
             control_data = map(func, input_data)
             assert output_data == control_data
@@ -68,7 +68,7 @@ def test_pmap():
 
 # Tests the parallel execution with random data and multiple parameters.
 def test_pmap_multi():
-    print "Testing parallel execution with random data and multiple parameters..."
+    print("Testing parallel execution with random data and multiple parameters...")
     with PluginTester(autoinit=False) as t:
         t.orchestrator_config.use_colors = False
         t.orchestrator_config.ui_mode = "disabled"
@@ -77,10 +77,10 @@ def test_pmap_multi():
         t_list = thread_list()
         def func(*args):
             return sum( x for x in args if x is not None )
-        for i in xrange(10):
+        for i in range(10):
             input_data = []
-            for j in xrange(randint(2, 100)):
-                args = [randint(-10, 10) for x in xrange(randint(10, 20))]
+            for j in range(randint(2, 100)):
+                args = [randint(-10, 10) for x in range(randint(10, 20))]
                 input_data.append(args)
             output_data  = pmap(func, *input_data, pool_size=10)
             control_data = map(func, *input_data)
@@ -90,7 +90,7 @@ def test_pmap_multi():
 
 # Tests the parallel execution with errors.
 def test_pmap_errors():
-    print "Testing parallel execution with errors..."
+    print("Testing parallel execution with errors...")
     with PluginTester(autoinit=False) as t:
         t.orchestrator_config.use_colors = False
         t.orchestrator_config.ui_mode = "disabled"
@@ -105,15 +105,15 @@ def test_pmap_errors():
             if x & 1:
                 return None
             return int(x / 2)
-        output_data  = pmap(func,   xrange(200))
-        control_data = map(control, xrange(200))
+        output_data  = pmap(func,   range(200))
+        control_data = map(control, range(200))
         assert output_data == control_data
         assert t_list == thread_list()
 
 
 # Tests the parallel execution with delays.
 def test_pmap_delays():
-    print "Testing parallel execution with delays..."
+    print("Testing parallel execution with delays...")
     with PluginTester(autoinit=False) as t:
         t.orchestrator_config.use_colors = False
         t.orchestrator_config.ui_mode = "disabled"
@@ -125,7 +125,7 @@ def test_pmap_delays():
             sleep(1)
             return x
         def test(x):
-            assert pmap(func, xrange(x)) == range(x)
+            assert pmap(func, range(x)) == range(x)
         test(1)
         test(4)
         test(8)
@@ -134,7 +134,7 @@ def test_pmap_delays():
 
 # Tests the parallel execution with large inputs.
 def test_pmap_large_input():
-    print "Testing parallel execution with large inputs..."
+    print("Testing parallel execution with large inputs...")
     with PluginTester(autoinit=False) as t:
         t.orchestrator_config.use_colors = False
         t.orchestrator_config.ui_mode = "disabled"

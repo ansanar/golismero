@@ -69,28 +69,28 @@ def test():
     ##audit.plugin_load_overrides = [(True, "recon/test")]  # XXX DEBUG shorter run
 
     try:
-        print "Launching GoLismero..."
-        print
+        print("Launching GoLismero...")
+        print()
         t1 = time.time()
         code = run(config, audit)
         t2 = time.time()
-        print
-        print "GoLismero ran for %f seconds" % (t2 - t1)
-        print
+        print()
+        print("GoLismero ran for %f seconds" % (t2 - t1))
+        print()
         assert code == 0
 
-        print "Validating the audit database..."
-        print
+        print("Validating the audit database...")
+        print()
         validate(audit)
 
     finally:
-        print "Cleaning up..."
-        print
+        print("Cleaning up...")
+        print()
         try:
             os.unlink("%s.db" % audit.audit_name)
         except Exception:
             pass
-    print "Done!"
+    print("Done!")
 
 
 # Validate the audit database.

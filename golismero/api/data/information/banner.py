@@ -62,7 +62,7 @@ class Banner(Fingerprint):
         # Sanitize the properties.
         if not isinstance(host, IP) and not isinstance(host, Domain):
             host = to_utf8(host)
-            if isinstance(host, basestring):
+            if isinstance(host, str):
                 warn("Expected IP or Domain, got string instead",
                      RuntimeWarning)
                 try:

@@ -32,8 +32,8 @@ from ..common import pickle
 from ..api.config import Config
 
 from os import getpid
-from Queue import Queue
-from thread import get_ident
+from queue import Queue
+from _thread import get_ident
 from threading import Thread, RLock, Condition
 from traceback import print_exc
 

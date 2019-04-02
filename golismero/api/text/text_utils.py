@@ -63,7 +63,7 @@ def line_count(text):
 
     :raises: TypeError
     """
-    if not isinstance(text, basestring):
+    if not isinstance(text, str):
         raise TypeError("Expected basestring, got '%s' instead" % type(text))
 
     count = text.count("\n")
@@ -110,7 +110,7 @@ def generate_random_string(length = 30):
 
     m_available_chars = ascii_letters + digits
 
-    return "".join(choice(m_available_chars) for _ in xrange(length))
+    return "".join(choice(m_available_chars) for _ in range(length))
 
 
 #------------------------------------------------------------------------------
@@ -156,7 +156,7 @@ def uncamelcase(string):
 
     :raises: TypeError
     """
-    if not isinstance(string, basestring):
+    if not isinstance(string, str):
         raise TypeError("Expected basestring, got '%s' instead" % type(string))
 
     string = string.replace("_", " ")
@@ -179,11 +179,11 @@ def hexdump(s):
 
     :raises: TypeError
     """
-    if not isinstance(s, basestring):
+    if not isinstance(s, str):
         raise TypeError("Expected basestring, got '%s' instead" % type(s))
 
     a = []
-    for i in xrange(0, len(s), 16):
+    for i in range(0, len(s), 16):
         h1 = " ".join("%.2x" % ord(c) for c in s[i:i+8])
         h2 = " ".join("%.2x" % ord(c) for c in s[i+8:i+16])
         d = "".join(c if c in printable else "." for c in s[i:i+16])
@@ -205,8 +205,6 @@ def to_utf8(s):
     :returns: Converted string.
     :rtype: str
     """
-    if isinstance(s, unicode):
-        return s.encode("UTF-8")
     if type(s) is not str and isinstance(s, str):
         return str(s)
     return s

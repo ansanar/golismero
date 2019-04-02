@@ -30,7 +30,7 @@ This scripts convert and URL wordlist into a simple wordlist with only the domai
 """
 import os
 import argparse
-from urlparse import urlparse, urlsplit
+from urllib.parse import urlparse, urlsplit
 
 
 #------------------------------------------------------------------------------
@@ -40,7 +40,7 @@ def main(args):
     file_output   = args.FILE_OUTPUT
     file_in       = args.WORDLIST_IN
 
-    print "[*] Preparing for parsing file: %s" % file_in
+    print("[*] Preparing for parsing file: %s" % file_in)
 
     w_filtered        = set()
     w_filtered_add    = w_filtered.add
@@ -60,7 +60,7 @@ def main(args):
                 hostname = urlsplit(prefix).netloc
                 hostname = ".".join(hostname.split(".")[-2:])
             except ValueError: # Error parsing
-                print "[i] Error parsing URL '%s' to check poisoned dns." % prefix
+                print("[i] Error parsing URL '%s' to check poisoned dns." % prefix)
                 continue
 
             # store
@@ -70,7 +70,7 @@ def main(args):
     with open(file_output, "w") as f:
         f.writelines(w_filtered)
 
-    print "[*] Parsed %s URLs." % len(w_filtered)
+    print("[*] Parsed %s URLs." % len(w_filtered))
 
 
 if __name__=='__main__':

@@ -9,7 +9,7 @@ Shared data containers for plugins.
          importantly, the dict() and set() types use equality comparisons to
          determine if two keys or two values are the same, so:
 
-         >>> set([False, 0, 0L, 0.0, complex(0, 0), "", u""])
+         >>> set([False, 0, 0.0, complex(0, 0), "", u""])
          set([False, ''])
 
          This happens because many of those objects, when compared to each
@@ -20,7 +20,6 @@ Shared data containers for plugins.
          >>> h = SharedHeap()
          >>> h.add(False)
          >>> h.add(0)
-         >>> h.add(0L)
          >>> h.add(0.0)
          >>> h.add(complex(0, 0))
          >>> h.add("")
@@ -669,7 +668,7 @@ class SharedHeap (AbstractSharedContainer):
             If the container was empty, returns an empty tuple.
         :rtype: tuple( immutable, ... )
         """
-        maximum = long(maximum)
+        maximum = int(maximum)
         if maximum < 1:
             return ()
         values = Config._context.remote_call(
@@ -743,7 +742,7 @@ class SharedHeap (AbstractSharedContainer):
 _valid_objects = (None, Ellipsis)
 
 # Built-in immutable hashable scalar types.
-_valid_scalars = (bool, int, long, float, str, unicode, complex)
+_valid_scalars = (bool, int, float, str, complex)
 
 # Built-in immutable hashable container types.
 _valid_containers = (tuple, frozenset)

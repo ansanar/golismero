@@ -90,7 +90,7 @@ class HTMLReport(json.JSONOutput):
         del report_data["false_positives"]
 
         # Gather all taxonomies into a single property.
-        for vuln in report_data["vulnerabilities"].itervalues():
+        for vuln in iter(report_data["vulnerabilities"].values()):
             taxonomy = []
             for prop in TAXONOMY_NAMES:
                 taxonomy.extend(vuln.get(prop, []))
@@ -107,14 +107,14 @@ class HTMLReport(json.JSONOutput):
              data["plugin_id"],
              data["target_id"],
              data["identity"])
-            for data in vulnerabilities.itervalues()
+            for data in iter(vulnerabilities.values())
         ]
         sort_keys.sort()
         report_data["vulnerabilities"] = [
             {
                 propname: propvalue
                 for propname, propvalue
-                in vulnerabilities[identity].iteritems()
+                in iter(vulnerabilities[identity].items())
                 if propname in (
                     "display_name",
                     "plugin_id",
@@ -150,14 +150,14 @@ class HTMLReport(json.JSONOutput):
         # Remove any dangling links we may have.
         links = set()
         for iterator in (
-            report_data["resources"].itervalues(),
-            report_data["informations"].itervalues(),
+            iter(report_data["resources"].values()),
+            iter(report_data["informations"].values()),
             report_data["vulnerabilities"]
         ):
             links.update(data["identity"] for data in iterator)
         for iterator in (
-            report_data["resources"].itervalues(),
-            report_data["informations"].itervalues(),
+            iter(report_data["resources"].values()),
+            iter(report_data["informations"].values()),
             report_data["vulnerabilities"]
         ):
             for data in iterator:
@@ -171,8 +171,8 @@ class HTMLReport(json.JSONOutput):
         # plugin IDs to user-friendly plugin names.
         plugin_map = dict()
         for iterator in (
-            report_data["resources"].itervalues(),
-            report_data["informations"].itervalues(),
+            iter(report_data["resources"].values()),
+            iter(report_data["informations"].values()),
             report_data["vulnerabilities"]
         ):
             for data in iterator:
@@ -189,7 +189,7 @@ class HTMLReport(json.JSONOutput):
             vulns_by_level[level] = 0
         vulns_by_level.update(
             v["level"] for v in report_data["vulnerabilities"])
-        vulns_by_level = {k.title(): v for k, v in vulns_by_level.iteritems()}
+        vulns_by_level = {k.title(): v for k, v in iter(vulns_by_level.items())}
         vulns_by_type = dict(Counter(
                 v["display_name"] for v in report_data["vulnerabilities"]
             ))
@@ -225,10 +225,10 @@ class HTMLReport(json.JSONOutput):
         template = os.path.dirname(__file__)
         template = os.path.abspath(template)
         template = os.path.join(template, "template.html")
-        with open(template, "rb") as fd:
+        with open(template, "r") as fd:
             html = fd.read()
         assert "%DATA%" in html, "Invalid template!"
         html = html.replace("%DATA%", serialized_data)
         del serialized_data
-        with open(output_file, "wb") as fd:
+        with open(output_file, "w") as fd:
             fd.write(html)

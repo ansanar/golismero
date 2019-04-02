@@ -72,4 +72,4 @@ def show_banner():
     """
     Prints the program banner.
     """
-    print get_banner()
+    print(get_banner())

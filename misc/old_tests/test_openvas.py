@@ -57,7 +57,7 @@ global sem
 
 #------------------------------------------------------------------------------
 def test_launch_scan():
-    print "Testing launching an OpenVAS scan..."
+    print("Testing launching an OpenVAS scan...")
     sem = Semaphore(0)
     manager = VulnscanManager(host, user, password)
     scan_id, target_id = manager.launch_scan(
@@ -66,25 +66,25 @@ def test_launch_scan():
         callback_progress=callback_step
     )
     sem.acquire()
-    print manager.get_results(scan_id)
+    print(manager.get_results(scan_id))
 
 def test_get_info():
-    print "Testing OpenVAS manager properties..."
+    print("Testing OpenVAS manager properties...")
     manager = VulnscanManager(host, user, password)
-    print "All scans"
-    print manager.get_all_scans
-    print "Finished scans"
-    print manager.get_finished_scans
-    print "Running scans"
-    print manager.get_running_scans
-    print "Available profiles"
-    print manager.get_profiles
+    print("All scans")
+    print(manager.get_all_scans)
+    print("Finished scans")
+    print(manager.get_finished_scans)
+    print("Running scans")
+    print(manager.get_running_scans)
+    print("Available profiles")
+    print(manager.get_profiles)
 
 
 sem = None # For control the interval
 
 def test_callback():
-    print "Testing openvas lib callbacks..."
+    print("Testing openvas lib callbacks...")
 
     sem = Semaphore(0)
     manager = VulnscanManager(host, user, password)
@@ -97,25 +97,25 @@ def test_callback():
     # Wait
     sem.acquire()
 
-    print "Finished callback test!"
+    print("Finished callback test!")
 
 
 #------------------------------------------------------------------------------
 def callback_step(a):
-    print "OpenVAS status: %s" % str(a)
+    print("OpenVAS status: %s" % str(a))
 
 
 #------------------------------------------------------------------------------
 def test_status():
     manager = VulnscanManager(host, user, password)
 
-    print "Testing OpenVAS status..."
-    print manager.get_progress("4aa8df2f-3b35-4c1e-8c26-74202f02dd12")
+    print("Testing OpenVAS status...")
+    print(manager.get_progress("4aa8df2f-3b35-4c1e-8c26-74202f02dd12"))
 
 
 #------------------------------------------------------------------------------
 def test_import():
-    print "Testing OpenVAS importer..."
+    print("Testing OpenVAS importer...")
     orchestrator_config = OrchestratorConfig()
     orchestrator_config.ui_mode = "disabled"
     audit_config = AuditConfig()

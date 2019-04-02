@@ -143,7 +143,7 @@ class OpenVASPlugin(TestingPlugin):
                 m_timeout = int(m_timeout)
                 assert m_timeout > 0, "Wrong timeout value"
 
-        except Exception, e:
+        except Exception as e:
             raise ValueError(str(e))
 
         # Connect to the scanner.
@@ -153,7 +153,7 @@ class OpenVASPlugin(TestingPlugin):
             raise RuntimeError(
                 "Remote host is running an unsupported version of OpenVAS."
                 " Only OpenVAS 6 is currently supported.")
-        except VulnscanException, e:
+        except VulnscanException as e:
             raise RuntimeError(str(e))
 
         # Check the plugin database exists.
@@ -212,7 +212,7 @@ class OpenVASPlugin(TestingPlugin):
                 self.state.put("connection_down", True)
                 return
 
-            except VulnscanException, e:
+            except VulnscanException as e:
                 t = format_exc()
                 Logger.log_error("Error connecting to OpenVAS, aborting scan!")
                 Logger.log_error_more_verbose(t)
@@ -226,7 +226,7 @@ class OpenVASPlugin(TestingPlugin):
             try:
                 # Launch the scanner.
                 m_scan_id, m_target_id = m_scanner.launch_scan(
-                    target=info.address,
+                    target=info.hostname,
                     profile=m_profile,
                     callback_end=partial(lambda x: x.set(), m_event),
                     callback_progress=OpenVASProgress(self.update_status)
@@ -239,7 +239,7 @@ class OpenVASPlugin(TestingPlugin):
                 # Get the scan results.
                 m_openvas_results = m_scanner.get_results(m_scan_id)
 
-            except Exception, e:
+            except Exception as e:
                 t = format_exc()
                 Logger.log_error_verbose(
                     "Error parsing OpenVAS results: %s" % str(e))
@@ -251,7 +251,7 @@ class OpenVASPlugin(TestingPlugin):
                 # Clean up.
                 if m_scan_id:
                     # Stop the scan
-                    for i in xrange(3):
+                    for i in range(3):
                         try:
 
                             # Clear the info
@@ -261,7 +261,7 @@ class OpenVASPlugin(TestingPlugin):
                             break
                         except VulnscanAuditNotFoundError:
                             break
-                        except Exception, e:
+                        except Exception as e:
                             sleep(0.1)
                             Logger.log_error_more_verbose(
                                 "Error while stopping scan ID: %s. "
@@ -270,7 +270,7 @@ class OpenVASPlugin(TestingPlugin):
                             continue
 
                     # Delete the scan
-                    for i in xrange(3):
+                    for i in range(3):
                         try:
 
                             # Clear the info
@@ -278,7 +278,7 @@ class OpenVASPlugin(TestingPlugin):
 
                             # If not error, break
                             break
-                        except Exception, e:
+                        except Exception as e:
                             sleep(0.1)
                             Logger.log_error_more_verbose(
                                 "Error while deleting scan ID: %s. "
@@ -288,7 +288,7 @@ class OpenVASPlugin(TestingPlugin):
 
                 if m_target_id:
                     # Remove the target
-                    for i in xrange(3):
+                    for i in range(3):
                         try:
 
                             # Clear the info
@@ -296,7 +296,7 @@ class OpenVASPlugin(TestingPlugin):
 
                             # If not error, break
                             break
-                        except Exception, e:
+                        except Exception as e:
                             sleep(0.1)
                             Logger.log_error_more_verbose(
                                 "Error while deleting target ID: %s. "
@@ -304,6 +304,7 @@ class OpenVASPlugin(TestingPlugin):
                                 (str(m_target_id), str(i)), e.message)
                             continue
 
+            m_scanner.close()
         # Convert the scan results to the GoLismero data model.
         return self.parse_results(m_openvas_results, info)
 
@@ -485,7 +486,7 @@ class OpenVASPlugin(TestingPlugin):
                 try:
                     clazz = globals()[classname]
                     vuln  = clazz(target, **kwargs)
-                except Exception, e:
+                except Exception as e:
                     t = format_exc()
                     Logger.log_error_more_verbose(
                         "Could not load vulnerability of type: %s" % classname)
@@ -494,7 +495,7 @@ class OpenVASPlugin(TestingPlugin):
                 results.append(vuln)
 
             # Skip this result on error.
-            except Exception, e:
+            except Exception as e:
                 t = format_exc()
                 Logger.log_error_verbose(
                     "Error parsing OpenVAS results: %s" % str(e))
@@ -528,7 +529,7 @@ class OpenVASImportPlugin(ImportPlugin):
             golismero_results = OpenVASPlugin.parse_results(openvas_results)
             if golismero_results:
                 Database.async_add_many(golismero_results)
-        except Exception, e:
+        except Exception as e:
             fmt = format_exc()
             Logger.log_error(
                 "Could not load OpenVAS results from file: %s" % input_file)

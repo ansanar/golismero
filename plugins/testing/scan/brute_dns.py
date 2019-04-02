@@ -86,7 +86,7 @@ class DNSBruteforcer(TestingPlugin):
         # Set a base line for dinamyc sub-domains
         #
         m_virtual_domains = []
-        for v in (generate_random_string(40) for x in xrange(3)):
+        for v in (generate_random_string(40) for x in range(3)):
             l_subdomain = ".".join((v, root))
 
             records = DNS.get_a(l_subdomain, also_CNAME=True)

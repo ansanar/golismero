@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 from collections import defaultdict
 from csv import reader
 from requests import get, post
-from StringIO import StringIO
+from io import StringIO
 from time import sleep
 from traceback import format_exc
 from warnings import warn
@@ -73,7 +73,7 @@ class SpiderFootPlugin(TestingPlugin):
             url = parse_url(raw_url)
             assert url.scheme, "Invalid URL"
             assert url.host, "Invalid URL"
-        except Exception, e:
+        except Exception as e:
             raise ValueError(str(e))
 
         # Connect to the scanner and check the version number.
@@ -95,7 +95,7 @@ class SpiderFootPlugin(TestingPlugin):
                 " found version %s instead." % version
         except AssertionError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise RuntimeError(
                 "Cannot connect to SpiderFoot, reason: %s" % e)
 
@@ -234,7 +234,7 @@ class SpiderFootPlugin(TestingPlugin):
                         ##    Logger.log_error_more_verbose(
                         ##        "Could not delete scan, error code: %s"
                         ##        % resp.status_code)
-                except Exception, e:
+                except Exception as e:
                     tb = format_exc()
                     Logger.log_error_verbose(str(e))
                     Logger.log_error_more_verbose(tb)
@@ -290,7 +290,7 @@ class SpiderFootImportPlugin(ImportPlugin):
                 results = SpiderFootParser().parse(fd)
             if results:
                 Database.async_add_many(results)
-        except Exception, e:
+        except Exception as e:
             fmt = format_exc()
             Logger.log_error(
                 "Could not load file: %s" % input_file)
@@ -372,14 +372,14 @@ class SpiderFootParser(object):
                 self.__add_partial_results(partial_results)
 
             # On error, log the exception and move to the next row.
-            except Exception, e:
+            except Exception as e:
                 tb = format_exc()
                 Logger.log_error_verbose(str(e))
                 Logger.log_error_more_verbose(tb)
 
 
         # Reconstruct the suspicious header vulnerabilities.
-        for url, headers in self.strange_headers.iteritems():
+        for url, headers in iter(self.strange_headers.items()):
             try:
                 if url in self.reconstructed_http:
                     identity = self.reconstructed_http[url]
@@ -391,7 +391,7 @@ class SpiderFootParser(object):
                     warn("Missing information in SpiderFoot results, \
                           some data may be lost")
                     warn_data_lost = False
-            except Exception, e:
+            except Exception as e:
                 tb = format_exc()
                 Logger.log_error_verbose(str(e))
                 Logger.log_error_more_verbose(tb)
@@ -419,7 +419,7 @@ class SpiderFootParser(object):
                 ip = IP(address)
                 ps = Portscan(ip, (("OPEN", "TCP", port) for port in ports))
                 self.__add_partial_results((ip, ps))
-            except Exception, e:
+            except Exception as e:
                 tb = format_exc()
                 Logger.log_error_verbose(str(e))
                 Logger.log_error_more_verbose(tb)

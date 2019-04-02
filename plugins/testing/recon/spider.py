@@ -66,7 +66,7 @@ class Spider(TestingPlugin):
                 (info.depth == 0 and Config.audit_config.follow_first_redirect)
             p = download(m_url, self.check_download,
                          allow_redirects=allow_redirects)
-        except NetworkException, e:
+        except NetworkException as e:
             Logger.log_error_verbose(
                 "Error while processing %r: %s" % (m_url, str(e)))
 

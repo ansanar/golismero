@@ -78,47 +78,47 @@ class RSTReport(ReportPlugin):
         self.__full_report = not Config.audit_config.only_vulns
 
         # Print the main header.
-        print >>f, "GoLismero Report"
-        print >>f, "================"
-        print >>f, ""
-        print >>f, ".. title:: %s - GoLismero" % self.__format_rst(Config.audit_name)
-        print >>f, ""
-        print >>f, ".. footer:: Report generation date: %s UTC" % datetime.utcnow()
-        print >>f, ""
-        print >>f, ".. contents:: Table of Contents"
-        print >>f, "   :depth: 3"
-        print >>f, "   :backlinks: top"
-        print >>f, ""
+        print("GoLismero Report", file=f)
+        print("================", file=f)
+        print("", file=f)
+        print(".. title:: %s - GoLismero" % self.__format_rst(Config.audit_name), file=f)
+        print("", file=f)
+        print(".. footer:: Report generation date: %s UTC" % datetime.utcnow(), file=f)
+        print("", file=f)
+        print(".. contents:: Table of Contents", file=f)
+        print("   :depth: 3", file=f)
+        print("   :backlinks: top", file=f)
+        print("", file=f)
 
         # Print the summary.
         start_time, stop_time, run_time = parse_audit_times( *get_audit_times() )
-        print >>f, "Summary"
-        print >>f, "-------"
-        print >>f, ""
-        print >>f, "- Audit name: " + self.__format_rst(Config.audit_name)
-        print >>f, "- Start date: " + start_time
-        print >>f, "- End date: " + stop_time
-        print >>f, "- Execution time: " + run_time
-        print >>f, "- Report type: " + (
-            "Full" if self.__full_report else "Brief")
-        print >>f, ""
+        print("Summary", file=f)
+        print("-------", file=f)
+        print("", file=f)
+        print("- Audit name: " + self.__format_rst(Config.audit_name), file=f)
+        print("- Start date: " + start_time, file=f)
+        print("- End date: " + stop_time, file=f)
+        print("- Execution time: " + run_time, file=f)
+        print("- Report type: " + (
+            "Full" if self.__full_report else "Brief"), file=f)
+        print("", file=f)
 
         # Print the audit scope.
-        print >>f, "Audit Scope"
-        print >>f, "-----------"
-        print >>f, ""
-        print >>f, "- IP Addresses: "
+        print("Audit Scope", file=f)
+        print("-----------", file=f)
+        print("", file=f)
+        print("- IP Addresses: ", file=f)
         for address in Config.audit_scope.addresses:
-            print >>f, "  + " + self.__format_rst(address)
-        print >>f, "- Domains:"
+            print("  + " + self.__format_rst(address), file=f)
+        print("- Domains:", file=f)
         scope_domains = ["*." + r for r in Config.audit_scope.roots]
         scope_domains.extend(Config.audit_scope.domains)
         for domain in scope_domains:
-            print >>f, "  + " + self.__format_rst(domain)
-        print >>f, "- Web Pages:"
+            print("  + " + self.__format_rst(domain), file=f)
+        print("- Web Pages:", file=f)
         for url in Config.audit_scope.web_pages:
-            print >>f, "  + " + self.__format_rst(url)
-        print >>f, ""
+            print("  + " + self.__format_rst(url), file=f)
+        print("", file=f)
 
         # Collect the vulnerabilities that are not false positives.
         datas = self.__collect_vulns(False)
@@ -126,15 +126,15 @@ class RSTReport(ReportPlugin):
         # If it's a brief report and we have no vulnerabilities,
         # write a message and stop.
         if not datas and not self.__full_report:
-            print >>f, "No vulnerabilities found."
-            print >>f, ""
+            print("No vulnerabilities found.", file=f)
+            print("", file=f)
             return
 
         # Collect the false positives.
         # In brief mode, this is used to eliminate the references to them.
         fp = self.__collect_vulns(True)
         self.__fp = set()
-        for ids in fp.itervalues():
+        for ids in iter(fp.values()):
             self.__fp.update(ids)
 
         try:
@@ -177,7 +177,7 @@ class RSTReport(ReportPlugin):
         if identities is None:
             identities = list(Database.keys(data_type, data_subtype))
         if identities:
-            for page in xrange(0, len(identities), 100):
+            for page in range(0, len(identities), 100):
                 for data in Database.get_many(identities[page:page + 100]):
                     yield data
 
@@ -186,7 +186,7 @@ class RSTReport(ReportPlugin):
     __re_escape_rst = re.compile("(%s)" % "|".join("\\" + x for x in "*:,.\"!-/';~?@[]<>|+^=_\\"))
     __re_unindent = re.compile("^( +)", re.M)
     def __escape_rst(self, s):
-        if not isinstance(s, basestring):
+        if not isinstance(s, str):
             s = str(s)
         s = s.replace("\t", " " * 8)
         s = s.replace("\r\n", "\n")
@@ -207,7 +207,7 @@ class RSTReport(ReportPlugin):
     def __format_rst(self, obj, hyperlinks = False, width = 70):
         if hyperlinks:
             return "\n".join("`ID: %s`_" % x for x in obj)
-        if isinstance(obj, basestring):
+        if isinstance(obj, str):
             obj = str(obj)
             if any(ord(c) > 127 for c in obj):
                 obj = hexdump(obj)
@@ -217,15 +217,15 @@ class RSTReport(ReportPlugin):
             return self.__escape_rst(obj)
         if (
             (isinstance(obj, list) or isinstance(obj, tuple)) and
-            all(isinstance(x, basestring) for x in obj)
+            all(isinstance(x, str) for x in obj)
         ):
             return "\n".join("- " + self.__escape_rst(
-                to_utf8(x) if isinstance(x, basestring) else pformat(x)
+                to_utf8(x) if isinstance(x, str) else pformat(x)
             ) for x in obj)
         if isinstance(obj, dict):
             return "\n".join(
                 self.__escape_rst("%s: %s" % (k,v))
-                for k,v in obj.iteritems())
+                for k,v in iter(obj.items()))
         try:
             text = str(obj)
         except Exception:
@@ -243,7 +243,7 @@ class RSTReport(ReportPlugin):
             for data in self.__iterate_data(data_type=data_type):
                 if data.identity in self.__vulnerable:
                     datas[data.display_name].append(data.identity)
-        for x in datas.itervalues():
+        for x in iter(datas.values()):
             x.sort()
         return datas
 
@@ -254,7 +254,7 @@ class RSTReport(ReportPlugin):
         for vuln in self.__iterate_data(data_type=Data.TYPE_VULNERABILITY):
             if bool(vuln.false_positive) == fp_filter:
                 vulns[vuln.display_name].append(vuln.identity)
-        for x in vulns.itervalues():
+        for x in iter(vulns.values()):
             x.sort()
         return vulns
 
@@ -272,17 +272,17 @@ class RSTReport(ReportPlugin):
             titles.append("Uncategorized Vulnerability")
 
         # Print the data type header.
-        print >>f, header
-        print >>f, "-" * len(header)
-        print >>f, ""
+        print(header, file=f)
+        print("-" * len(header), file=f)
+        print("", file=f)
 
         # Dump the data per type.
         for title in titles:
 
             # Print the title.
-            print >>f, title
-            print >>f, "+" * len(title)
-            print >>f, ""
+            print(title, file=f)
+            print("+" * len(title), file=f)
+            print("", file=f)
 
             # Dump the data per title.
             show_ruler = False
@@ -290,15 +290,15 @@ class RSTReport(ReportPlugin):
 
                 # Show the horizontal ruler for all items but the first.
                 if show_ruler:
-                    print >>f, "----"
-                    print >>f, ""
+                    print("----", file=f)
+                    print("", file=f)
                 show_ruler = True
 
                 # Show the data title.
                 data_title = "ID: %s" % (data.identity)
-                print >>f, data_title
-                print >>f, "^" * len(data_title)
-                print >>f, ""
+                print(data_title, file=f)
+                print("^" * len(data_title), file=f)
+                print("", file=f)
 
                 # Collect the properties.
                 property_groups = defaultdict(dict)
@@ -352,7 +352,7 @@ class RSTReport(ReportPlugin):
                     hyperlinks = group == "Graph Links"
                     properties = {
                         key: self.__format_rst(value, hyperlinks).split("\n")
-                        for key, value in properties.iteritems()
+                        for key, value in iter(properties.items())
                         if value
                     }
                     if "Target ID" in properties:
@@ -402,26 +402,26 @@ class RSTReport(ReportPlugin):
                     # Get the width of the values column.
                     h_values = "Property value"
                     w_values = len(h_values)
-                    for v in properties.itervalues():
+                    for v in iter(properties.values()):
                         for x in v:
                             w_values = max(w_values, len(x))
 
                     # Print the group header.
                     if group != "[DEFAULT]":
-                        print >>f, group
-                        print >>f, "*" * len(group)
-                        print >>f, ""
+                        print(group, file=f)
+                        print("*" * len(group), file=f)
+                        print("", file=f)
 
                     # Dump the properties.
                     fmt = "| %%-%ds | %%-%ds |" % (w_names, w_values)
                     separator = "+-%s-+-%s-+" % (("-" * w_names), ("-" * w_values))
-                    print >>f, separator
-                    print >>f, fmt % (h_names, h_values)
-                    print >>f, separator.replace("-", "=")
+                    print(separator, file=f)
+                    print(fmt % (h_names, h_values), file=f)
+                    print(separator.replace("-", "="), file=f)
                     for name in names:
                         lines = properties[name]
-                        print >>f, fmt % (name, lines.pop(0))
+                        print(fmt % (name, lines.pop(0)), file=f)
                         for x in lines:
-                            print >>f, fmt % ("", x)
-                        print >>f, separator
-                    print >>f, ""
+                            print(fmt % ("", x), file=f)
+                        print(separator, file=f)
+                    print("", file=f)

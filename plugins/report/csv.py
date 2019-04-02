@@ -227,6 +227,6 @@ class CSVReport(ReportPlugin):
         if identities is None:
             identities = list(Database.keys(data_type, data_subtype))
         if identities:
-            for page in xrange(0, len(identities), 100):
+            for page in range(0, len(identities), 100):
                 for data in Database.get_many(identities[page:page + 100]):
                     yield data

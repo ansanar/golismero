@@ -100,7 +100,7 @@ class PredictablesDisclosureBruteforcer(TestingPlugin):
         # Common wordlists
         try:
             w = Config.plugin_extra_config["common"]
-            wordlist.update([l_w for l_w in w.itervalues()])
+            wordlist.update([l_w for l_w in iter(w.values())])
         except KeyError:
             Logger.log_error("Can't load common wordlists")
 
@@ -115,7 +115,7 @@ class PredictablesDisclosureBruteforcer(TestingPlugin):
             # Wordlist of server name
             try:
                 w = Config.plugin_extra_config["%s_predictables" % server_canonical_name]
-                wordlist_update([l_w for l_w in w.itervalues()])
+                wordlist_update([l_w for l_w in iter(w.values())])
             except KeyError:
                 Logger.log_error("Can't load predictables wordlists for server: '%s'." % server_canonical_name)
 
@@ -123,8 +123,8 @@ class PredictablesDisclosureBruteforcer(TestingPlugin):
             try:
                 for l_servers_related in servers_related:
                     w = Config.plugin_extra_config["%s_predictables" % l_servers_related]
-                    wordlist_update([l_w for l_w in w.itervalues()])
-            except KeyError, e:
+                    wordlist_update([l_w for l_w in iter(w.values())])
+            except KeyError as e:
                 Logger.log_error("Can't load wordlists predictables wordlists for related webserver: '%s'" % e)
 
         # Load content of wordlists
@@ -139,7 +139,7 @@ class PredictablesDisclosureBruteforcer(TestingPlugin):
                 try:
                     l_wo = l_wo[1:] if l_wo.startswith("/") else l_wo
                     tmp_u = urljoin(m_url, l_wo)
-                except ValueError, e:
+                except ValueError as e:
                     Logger.log_error("Failed to parse key, from wordlist, '%s'" % tmp_u)
                     continue
 
@@ -153,7 +153,7 @@ class PredictablesDisclosureBruteforcer(TestingPlugin):
         # Create the matching analyzer
         try:
             store_info = MatchingAnalyzer(error_response.raw_data, min_ratio=0.65)
-        except ValueError, e:
+        except ValueError as e:
             Logger.log_error("There is not information for analyze when creating the matcher: '%s'" % e)
             return
 
@@ -211,7 +211,7 @@ class SuffixesDisclosureBruteforcer(TestingPlugin):
         # Create the matching analyzer
         try:
             m_store_info = MatchingAnalyzer(m_error_response.raw_data, min_ratio=0.65)
-        except ValueError, e:
+        except ValueError as e:
             Logger.log_error("There is not information for analyze when creating the matcher: '%s'" % e)
             return
 
@@ -269,7 +269,7 @@ class PrefixesDisclosureBruteforcer(TestingPlugin):
         # Create the matching analyzer
         try:
             m_store_info = MatchingAnalyzer(m_error_response.raw_data, min_ratio=0.65)
-        except ValueError, e:
+        except ValueError as e:
             Logger.log_error("There is not information for analyze when creating the matcher: '%s'" % e)
             return
 
@@ -327,7 +327,7 @@ class FileExtensionsDisclosureBruteforcer(TestingPlugin):
         # Create the matching analyzer
         try:
             m_store_info = MatchingAnalyzer(m_error_response.raw_data, min_ratio=0.65)
-        except ValueError, e:
+        except ValueError as e:
             Logger.log_error("There is not enough information to analyze when creating the matcher: '%s'" % e)
             return
 
@@ -385,7 +385,7 @@ class PermutationsDisclosureBruteforcer(TestingPlugin):
         # Create the matching analyzer
         try:
             m_store_info = MatchingAnalyzer(m_error_response.raw_data, min_ratio=0.65)
-        except ValueError, e:
+        except ValueError as e:
             Logger.log_error("There is not information for analyze when creating the matcher: '%s'" % e)
             return
 
@@ -442,7 +442,7 @@ class DirectoriesDisclosureBruteforcer(TestingPlugin):
         # Create the matching analyzer
         try:
             m_store_info = MatchingAnalyzer(m_error_response.raw_data, min_ratio=0.65)
-        except ValueError, e:
+        except ValueError as e:
             Logger.log_error("There is not information for analyze when creating the matcher: '%s'" % e)
             return
 
@@ -496,7 +496,7 @@ def process_url(risk_level, method, matcher, updater_func, total_urls, url):
         p = HTTP.get_url(url, use_cache=False, method=method)
         if p:
             discard_data(p)
-    except Exception, e:
+    except Exception as e:
         Logger.log_error_more_verbose("Error while processing: '%s': %s" % (url, str(e)))
 
     # Check if the url is acceptable by comparing
@@ -514,7 +514,7 @@ def process_url(risk_level, method, matcher, updater_func, total_urls, url):
                 p = HTTP.get_url(url, use_cache=False, method="GET")
                 if p:
                     discard_data(p)
-            except Exception, e:
+            except Exception as e:
                 Logger.log_error_more_verbose("Error while processing: '%s': %s" % (url, str(e)))
 
         # Append for analyze and display info if is accepted
@@ -545,13 +545,13 @@ def load_wordlists(wordlists):
 
     # Get wordlist to load
     for l_w in wordlists:
-        for wordlist_family, l_wordlists in Config.plugin_extra_config.iteritems():
+        for wordlist_family, l_wordlists in iter(Config.plugin_extra_config.items()):
             if wordlist_family.lower() in l_w.lower():
                 m_tmp_wordlist[l_w] = l_wordlists
 
     # Load the wordlist
     m_return = {}
-    for k, w_paths in m_tmp_wordlist.iteritems():
+    for k, w_paths in iter(m_tmp_wordlist.items()):
         m_return[k] = [WordListLoader.get_wordlist_as_list(w) for w in w_paths]
 
     return m_return
@@ -604,8 +604,8 @@ def HTTP_response_headers_analyzer(response_header_1, response_header_2):
         "Last-Modified",
     ]
 
-    m_res1 = ''.join([ "%s:%s" % (k,v) for k,v in response_header_1.iteritems() if k not in m_invalid_headers ])
-    m_res2 = ''.join([ "%s:%s" % (k,v) for k,v in response_header_2.iteritems() if k not in m_invalid_headers ])
+    m_res1 = ''.join([ "%s:%s" % (k,v) for k,v in iter(response_header_1.items()) if k not in m_invalid_headers ])
+    m_res2 = ''.join([ "%s:%s" % (k,v) for k,v in iter(response_header_2.items()) if k not in m_invalid_headers ])
 
     return get_diff_ratio(m_res1, m_res2)
 
@@ -747,7 +747,7 @@ def make_url_mutate_filename(url_parts):
     # Adding numeric ends of filename
     m_new = url_parts.copy()
     filename = m_new.filename
-    for n in xrange(5):
+    for n in range(5):
 
         # Format: index1.php
         m_new.filename = filename + str(n)
@@ -783,7 +783,7 @@ def make_url_changing_folder_name(url_parts):
     m_directory  = m_new.directory
 
     if len(m_directory.split("/")) > 1:
-        for n in xrange(20):
+        for n in range(20):
             m_new.directory = "%s%s" % (m_directory, str(n))
             m_return_add(m_new.url)
 
@@ -935,10 +935,10 @@ def get_list_from_wordlist(wordlist):
     try:
         m_commom_wordlists = set()
 
-        for v in Config.plugin_extra_config[wordlist].itervalues():
+        for v in iter(Config.plugin_extra_config[wordlist].values()):
             m_commom_wordlists.update(WordListLoader.get_wordlist_as_list(v))
 
         return m_commom_wordlists
-    except KeyError,e:
+    except KeyError as e:
         Logger.log_error_more_verbose(str(e))
         return set()

@@ -808,6 +808,9 @@ class OMP(object):
 		"""
 		raise NotImplementedError()
 
+	def close(self):
+		self._manager.close()
+
 	# ----------------------------------------------------------------------
 	@property
 	def remote_server_version(self):

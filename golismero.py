@@ -59,25 +59,7 @@ if not (has_here and has_thirdparty_libs):
 #       what happens (we haven't tested it!).
 
 from golismero import show_banner
-from sys import version_info, exit
-if __name__ == "__main__":
-    if version_info < (2, 7) or version_info >= (3, 0):
-        show_banner()
-        print "[!] You must use Python version 2.7"
-        exit(1)
-
-    # In OS X, python versions lower than 2.7.6 fails
-    import platform
-    if (
-        platform.system() == "Darwin" and
-        (version_info < (2,7,6) or version_info >= (3,0))
-    ):
-        show_banner()
-        print (
-            "[!] OS X can experiment some problems with Python versions lower than 2.7.6. It's recommended to upgrade"
-            " http://www.python.org/download/releases/2.7.6/"
-        )
-
+from sys import exit
 
 #------------------------------------------------------------------------------
 # Imported modules
@@ -86,11 +68,11 @@ import argparse
 import os
 import sys
 
-from ConfigParser import RawConfigParser
+from configparser import RawConfigParser
 from getpass import getpass
 from glob import glob
 from os import getenv, getpid
-from thread import get_ident
+from _thread import get_ident
 from traceback import format_exc
 
 # Hack to disable logging in SnakeMQ.
@@ -167,7 +149,7 @@ class ReadValueFromFileAction(argparse.Action):
         try:
             with open(values, "rU") as f:
                 data = f.read()
-        except IOError, e:
+        except IOError as e:
             parser.error("Can't read file %r. Error: %s" % (values, str(e)))
         setattr(namespace, self.dest, data)
 
@@ -562,7 +544,7 @@ def build_config_from_cmdline():
                 auditParams.only_vulns = True
 
     # Show exceptions as command line parsing errors.
-    except Exception, e:
+    except Exception as e:
         ##raise    # XXX DEBUG
         parser.error("arguments error: %s" % str(e))
 
@@ -621,68 +603,68 @@ def command_plugins(parser, P, cmdParams, auditParams):
     try:
         manager = PluginManager()
         manager.find_plugins(cmdParams)
-    except Exception, e:
+    except Exception as e:
         parser.error("error loading plugins list: %s" % str(e))
 
     # Show the list of plugins.
-    print colorize("-------------", "red")
-    print colorize(" Plugin list",  "red")
-    print colorize("-------------", "red")
+    print(colorize("-------------", "red"))
+    print(colorize(" Plugin list",  "red"))
+    print(colorize("-------------", "red"))
 
     # Import plugins...
     import_plugins = manager.get_plugins("import")
     if import_plugins:
-        print
-        print colorize("-= Import plugins =-", "yellow")
+        print()
+        print(colorize("-= Import plugins =-", "yellow"))
         for name in sorted(import_plugins.keys()):
             info = import_plugins[name]
-            print "\n%s:\n    %s" % \
-                  (colorize(name[7:], "cyan"), info.description)
+            print("\n%s:\n    %s" % \
+                  (colorize(name[7:], "cyan"), info.description))
 
     # Testing plugins...
     testing_plugins = manager.get_plugins("testing")
     if testing_plugins:
         names = sorted(testing_plugins.keys())
         names = [x[8:] for x in names]
-        stages = [ (v,k) for (k,v) in STAGES.iteritems() ]
+        stages = [ (v,k) for (k,v) in iter(STAGES.items()) ]
         stages.sort()
         for _, stage in stages:
             s = stage + "/"
             p = len(s)
             s_slice = [x[p:] for x in names if x.startswith(s)]
             if s_slice:
-                print
-                print colorize("-= %s plugins =-" % stage.title(), "yellow")
+                print()
+                print(colorize("-= %s plugins =-" % stage.title(), "yellow"))
                 for name in s_slice:
                     info = testing_plugins["testing/%s/%s" % (stage, name)]
                     desc = info.description.strip()
                     desc = desc.replace("\n", "\n    ")
-                    print "\n%s:\n    %s" % (colorize(name, "cyan"), desc)
+                    print("\n%s:\n    %s" % (colorize(name, "cyan"), desc))
 
     # Report plugins...
     report_plugins = manager.get_plugins("report")
     if report_plugins:
-        print
-        print colorize("-= Report plugins =-", "yellow")
+        print()
+        print(colorize("-= Report plugins =-", "yellow"))
         for name in sorted(report_plugins.keys()):
             info = report_plugins[name]
             desc = info.description.strip()
             desc = desc.replace("\n", "\n    ")
-            print "\n%s:\n    %s" % (colorize(name[7:], "cyan"), desc)
+            print("\n%s:\n    %s" % (colorize(name[7:], "cyan"), desc))
 
     # UI plugins...
     ui_plugins = manager.get_plugins("ui")
     if ui_plugins:
-        print
-        print colorize("-= UI plugins =-", "yellow")
+        print()
+        print(colorize("-= UI plugins =-", "yellow"))
         for name in sorted(ui_plugins.keys()):
             info = ui_plugins[name]
             desc = info.description.strip()
             desc = desc.replace("\n", "\n    ")
-            print "\n%s:\n    %s" % (colorize(name[3:], "cyan"), desc)
+            print("\n%s:\n    %s" % (colorize(name[3:], "cyan"), desc))
 
     if path.sep == "/":
-        print
+        print()
     exit(0)
 
 
@@ -697,7 +679,7 @@ def command_info(parser, P, cmdParams, auditParams):
     try:
         manager = PluginManager()
         manager.find_plugins(cmdParams)
-    except Exception, e:
+    except Exception as e:
         parser.error("error loading plugins list: %s" % str(e))
 
     # Show the plugin information.
@@ -764,7 +746,7 @@ def command_info(parser, P, cmdParams, auditParams):
             if info.plugin_args:
                 to_print.append("")
                 to_print.append(colorize("Arguments:", "green"))
-                for name, default in sorted(info.plugin_args.iteritems()):
+                for name, default in sorted(iter(info.plugin_args.items())):
                     if name in info.plugin_passwd_args:
                         default = "****************"
                     to_print.append("\t%s -> %s" %
@@ -776,12 +758,12 @@ def command_info(parser, P, cmdParams, auditParams):
     except ValueError:
         ##raise # XXX DEBUG
         parser.error("plugin ID not found")
-    except Exception, e:
+    except Exception as e:
         ##raise # XXX DEBUG
         parser.error("error recovering plugin info: %s" % str(e))
 
     for line in to_print:
-        print line
+        print(line)
     exit(0)
 
 
@@ -791,12 +773,12 @@ def command_profiles(parser, P, cmdParams, auditParams):
         parser.error("too many arguments")
     profiles = sorted(get_available_profiles())
     if not profiles:
-        print "No available profiles!"
+        print("No available profiles!")
     else:
-        print "--------------------"
-        print " " + colorize("Available profiles", "yellow")
-        print "--------------------"
-        print
+        print("--------------------")
+        print(" " + colorize("Available profiles", "yellow"))
+        print("--------------------")
+        print()
         for name in profiles:
             try:
                 p = RawConfigParser()
@@ -805,12 +787,12 @@ def command_profiles(parser, P, cmdParams, auditParams):
             except Exception:
                 desc = None
             if desc:
-                print "+ %s: %s" % (colorize(name, "cyan"), desc)
+                print("+ %s: %s" % (colorize(name, "cyan"), desc))
             else:
-                print "+ %s" % colorize(name, "cyan")
+                print("+ %s" % colorize(name, "cyan"))
 
     if path.sep == "/":
-        print
+        print()
     exit(0)
 
 
@@ -821,12 +803,12 @@ def command_dump(parser, P, cmdParams, auditParams):
     if not P.reports:
         parser.error("missing output filename")
     if P.verbose != 0:
-        print "Loading database: %s" % \
-              colorize(auditParams.audit_db, "yellow")
+        print("Loading database: %s" % \
+              colorize(auditParams.audit_db, "yellow"))
     import sqlite3
     for filename in P.reports:
         if P.verbose != 0:
-            print "Dumping to file: %s" % colorize(filename, "cyan")
+            print("Dumping to file: %s" % colorize(filename, "cyan"))
         db = sqlite3.connect(auditParams.audit_db)
         try:
             with open(filename, 'w') as f:
@@ -848,12 +830,12 @@ def command_load(parser, P, cmdParams, auditParams):
     import sqlite3
     filename = P.imports[0]
     if P.verbose != 0:
-        print "Loading from file: %s" % colorize(filename, "cyan")
+        print("Loading from file: %s" % colorize(filename, "cyan"))
     with open(filename, 'rU') as f:
         data = f.read()
     if P.verbose != 0:
-        print "Creating database: %s" % \
-              colorize(auditParams.audit_db, "yellow")
+        print("Creating database: %s" % \
+              colorize(auditParams.audit_db, "yellow"))
     db = sqlite3.connect(auditParams.audit_db)
     try:
         try:
@@ -923,12 +905,12 @@ def command_update(parser, P, cmdParams, auditParams):
     if not x.endswith(os.path.sep):
         x += os.path.sep
     our_modules = {
-        n: m for n, m in sys.modules.iteritems()
+        n: m for n, m in iter(sys.modules.items())
         if n.startswith("golismero.") or (
             hasattr(m, "__file__") and m.__file__.startswith(x)
         )
     }
-    for n in our_modules.iterkeys():
+    for n in iter(our_modules.keys()):
         if n.startswith("golismero.") or n.startswith("plugin_"):
             del sys.modules[n]
 
@@ -946,7 +928,7 @@ def command_update(parser, P, cmdParams, auditParams):
 
         # Call the plugin hooks.
         all_plugins = sorted(
-            t.orchestrator.pluginManager.load_plugins().iteritems())
+            iter(t.orchestrator.pluginManager.load_plugins().items()))
         for plugin_id, plugin in all_plugins:
             if hasattr(plugin, "update"):
                 if cmdParams.verbose:
@@ -1023,7 +1005,7 @@ def command_run(parser, P, cmdParams, auditParams):
         try:
             if P.raw_plugin_args:
                 P.plugin_args = parse_plugin_args(manager, P.raw_plugin_args)
-        except KeyError, e:
+        except KeyError as e:
             ##raise # XXX DEBUG
             parser.error("error parsing plugin arguments: %s" % str(e))
 
@@ -1050,7 +1032,7 @@ def command_run(parser, P, cmdParams, auditParams):
         auditParams.check_params()
 
         # Set the plugin arguments before loading the UI plugin.
-        for plugin_id, plugin_args in cmdParams.plugin_args.iteritems():
+        for plugin_id, plugin_args in iter(cmdParams.plugin_args.items()):
             status = manager.set_plugin_args(plugin_id, plugin_args)
             if status != 0:     # should never happen, but just in case...
                 if status == 1:
@@ -1066,14 +1048,14 @@ def command_run(parser, P, cmdParams, auditParams):
         ui_plugin = manager.load_plugin_by_id(ui_plugin_id)
 
     # Show an error message if something goes wrong.
-    except Exception, e:
+    except Exception as e:
         ##raise  # XXX DEBUG
         parser.error("error loading plugins: %s" % str(e))
 
     # Check the settings with the UI plugin.
     try:
         ui_plugin.check_params(cmdParams, auditParams)
-    except Exception, e:
+    except Exception as e:
         ##raise # XXX DEBUG
         msg = str(e)
         if not msg:

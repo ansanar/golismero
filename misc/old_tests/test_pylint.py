@@ -50,7 +50,7 @@ def test_pylint():
     try:
 
         # Run PyLint against the sources and save the log.
-        print "Running PyLint..."
+        print("Running PyLint...")
         with open("_tmp_pylint.log", "w") as log:
             from pylint import epylint as lint
             pwd = os.getcwd()
@@ -59,7 +59,7 @@ def test_pylint():
             os.chdir(pwd)
 
         # Clean up the log, filter out the false positives, and write the log to disk.
-        print "Cleaning up the PyLint log..."
+        print("Cleaning up the PyLint log...")
         if not golismero.endswith(path.sep):
             golismero += path.sep
         false_pos = set()
@@ -121,7 +121,7 @@ def test_pylint():
             os.unlink("_tmp_pylint.log")
         except:
             pass
-        print "Done!"
+        print("Done!")
 
 
 # Run the test from the command line.

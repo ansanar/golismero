@@ -86,7 +86,7 @@ class Robots(TestingPlugin):
         except NetworkOutOfScope:
             Logger.log_more_verbose("URL out of scope: %s" % (m_url_robots_txt))
             return
-        except Exception, e:
+        except Exception as e:
             Logger.log_more_verbose("Error while processing %r: %s" % (m_url_robots_txt, str(e)))
             return
 
@@ -106,7 +106,7 @@ class Robots(TestingPlugin):
         # Prepare for unicode
         try:
             if m_robots_text.startswith(codecs.BOM_UTF8):
-                m_robots_text = m_robots_text.decode('utf-8').lstrip(unicode(codecs.BOM_UTF8, 'utf-8'))
+                m_robots_text = m_robots_text.decode('utf-8').lstrip(str(codecs.BOM_UTF8, 'utf-8'))
             elif m_robots_text.startswith(codecs.BOM_UTF16):
                 m_robots_text = m_robots_text.decode('utf-16')
         except UnicodeDecodeError:
@@ -156,7 +156,7 @@ class Robots(TestingPlugin):
                     if m_key.lower() == "disallow":
                         m_discovered_suspicious.append(tmp_discovered)
 
-            except Exception,e:
+            except Exception as e:
                 continue
 
         #

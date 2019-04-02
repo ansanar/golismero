@@ -163,7 +163,7 @@ def test_http_headers():
     with PluginTester():
 
         # Test the methods.
-        print "Testing HTTP_Header() methods..."
+        print("Testing HTTP_Header() methods...")
         raw_headers = (
             "Host: www.example.com\r\n"
             "Connection: keep-alive\r\n"
@@ -179,22 +179,22 @@ def test_http_headers():
         assert headers.get("FAKE", "fake") == "fake"
         assert headers.get("NotHere") == None
         try:
-            print headers["lalalala"]
+            print(headers["lalalala"])
             assert False
         except KeyError:
             pass
         try:
-            print headers.get(object())
+            print(headers.get(object()))
             assert False
         except TypeError:
             pass
         try:
-            print headers.get(object(), "lalala")
+            print(headers.get(object(), "lalala"))
             assert False
         except TypeError:
             pass
         try:
-            print headers[object()]
+            print(headers[object()])
             assert False
         except TypeError:
             pass
@@ -202,12 +202,12 @@ def test_http_headers():
         assert headers[3] == "Content-Encoding: plain\r\n"
         assert headers[-1] == "Pragma: no-cache\r\n"
         try:
-            print headers[6]
+            print(headers[6])
             assert False
         except IndexError:
             pass
         try:
-            print headers[-7]
+            print(headers[-7])
             assert False
         except IndexError:
             pass
@@ -268,7 +268,7 @@ def test_http_headers():
 
         # Run parser test cases.
         for title, raw_headers, original, parsed in cases_http_headers:
-            print "Testing parser with %s..." % title
+            print("Testing parser with %s..." % title)
             headers = HTTP_Headers(raw_headers)
             assert str(headers) == raw_headers
             assert headers.to_tuple() == original
@@ -284,7 +284,7 @@ def test_http_headers():
 def test_http_request():
     with PluginTester():
 
-        print "Testing a simple GET request..."
+        print("Testing a simple GET request...")
         request = HTTP_Request("http://www.example.com/index.html")
         assert request.method == "GET"
         assert request.url == "http://www.example.com/index.html"
@@ -303,7 +303,7 @@ def test_http_request():
         assert request.content_type == None
         assert request.content_length == None
 
-        print "Testing a simple POST request..."
+        print("Testing a simple POST request...")
         request = HTTP_Request("http://www.example.com/form.php", post_data="hola=manola")
         assert request.method == "POST"
         assert request.url == "http://www.example.com/form.php"
@@ -322,7 +322,7 @@ def test_http_request():
         assert request.content_type == "application/x-www-form-urlencoded"
         assert request.content_length == len("hola=manola")
 
-        print "Testing a custom GET request (1)..."
+        print("Testing a custom GET request (1)...")
         t_headers = (("Cookie", "lala=pepe"), ("Referer", "http://www.example.com/"), ("User-Agent", "Test User Agent"))
         request = HTTP_Request("http://www.example.com/index.html", headers=t_headers, version="1.0")
         assert request.method == "GET"
@@ -342,7 +342,7 @@ def test_http_request():
         assert request.content_type == None
         assert request.content_length == None
 
-        print "Testing a custom GET request (2)..."
+        print("Testing a custom GET request (2)...")
         d_headers = {"Cookie": "lala=pepe", "Referer": "http://www.example.com/", "User-Agent": "Test User Agent"}
         request = HTTP_Request("http://www.example.com/index.html", headers=d_headers, version="1.0")
         assert request.method == "GET"
@@ -362,7 +362,7 @@ def test_http_request():
         assert request.content_type == None
         assert request.content_length == None
 
-        print "Testing a custom GET request (3)..."
+        print("Testing a custom GET request (3)...")
         o_headers = HTTP_Headers.from_items(t_headers)
         request = HTTP_Request("http://www.example.com/form.php?hola=manola", headers=o_headers, version="1.0")
         assert request.method == "GET"
@@ -382,7 +382,7 @@ def test_http_request():
         assert request.content_type == None
         assert request.content_length == None
 
-        print "Testing a custom POST request..."
+        print("Testing a custom POST request...")
         request = HTTP_Request("http://www.example.com/form.php", post_data="hola=manola", headers=t_headers, version="1.0")
         assert request.method == "POST"
         assert request.url == "http://www.example.com/form.php"
@@ -552,7 +552,7 @@ def test_http_response():
 
         # Run test cases.
         for title, kwargs in cases_http_response:
-            print "Testing %s..." % title
+            print("Testing %s..." % title)
             request = HTTP_Request("http://www.example.com/index.html")
             kw_1 = kwargs.copy()
             kw_2 = {"raw_response": kw_1.pop("raw_response")}
@@ -563,19 +563,19 @@ def test_http_response():
                 assert response.identity in request.links
                 assert request.identity in response.links
                 assert str(response.headers) == kwargs["raw_headers"]
-                for key, value in kwargs.iteritems():
+                for key, value in iter(kwargs.items()):
                     if key == "raw_response" and "broken" in title:
                         continue
                     try:
                         assert getattr(response, key) == value
                     except AssertionError:
-                        print "  key == %r" % key
-                        print "  value == %r" % value
-                        print "  getattr(response, key) == %r" % getattr(response, key)
+                        print("  key == %r" % key)
+                        print("  value == %r" % value)
+                        print("  getattr(response, key) == %r" % getattr(response, key))
                         raise
 
         # Test HTTP 0.9.
-        print "Testing HTTP 0.9 response..."
+        print("Testing HTTP 0.9 response...")
         request  = HTTP_Request("http://www.example.com/index.html", version="0.9")
         response = HTTP_Response(request, data="hola manola")
         assert response.raw_response == "hola manola"

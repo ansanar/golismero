@@ -46,7 +46,7 @@ from ..messaging.manager import MessageManager
 
 from imp import load_source
 from os import getpid
-from thread import get_ident
+from _thread import get_ident
 from threading import Timer
 from traceback import format_exc, print_exc, format_exception_only, format_list
 from warnings import catch_warnings, simplefilter
@@ -228,7 +228,7 @@ def _bootstrap(context, func, args, kwargs):
                                 message_info = plugin_warnings,
                                     priority = MessagePriority.MSG_PRIORITY_HIGH,
                             )
-                        except Exception, e:
+                        except Exception as e:
                             context.send_msg(
                                 message_type = MessageType.MSG_TYPE_CONTROL,
                                 message_code = MessageCode.MSG_CONTROL_ERROR,
@@ -236,7 +236,7 @@ def _bootstrap(context, func, args, kwargs):
                                     priority = MessagePriority.MSG_PRIORITY_HIGH,
                             )
 
-            except Exception, e:
+            except Exception as e:
 
                 # Tell the Orchestrator there's been an error.
                 context.send_msg(
@@ -383,7 +383,7 @@ def _bootstrap_inner(context, func, args, kwargs):
                         message_code = MessageCode.MSG_DATA_RESPONSE,
                         message_info = result,
                     )
-                except Exception, e:
+                except Exception as e:
                     context.send_msg(
                         message_type = MessageType.MSG_TYPE_CONTROL,
                         message_code = MessageCode.MSG_CONTROL_ERROR,
@@ -702,7 +702,7 @@ class PluginContext (object):
 
         # Validate the progress.
         if progress is not None:
-            if type(progress) in (int, long):
+            if type(progress) == int:
                 progress = float(progress)
             elif type(progress) is not float:
                 raise TypeError(
@@ -843,7 +843,7 @@ class PluginContext (object):
                     format_list(tb_list) )
             except Exception:
                 pass
-            raise response[0], response[1]
+            raise Exception(response[0], response[1])
         return response
 
 

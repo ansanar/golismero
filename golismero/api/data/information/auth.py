@@ -51,7 +51,7 @@ class Username(Asset):
         :param name: Username.
         :type name: str
         """
-        if not isinstance(name, basestring):
+        if not isinstance(name, str):
             raise TypeError("Expected string, got %r instead" % type(name))
         self.__name = to_utf8(name)
         super(Username, self).__init__()
@@ -85,7 +85,7 @@ class Password(Asset):
         :param password: Password.
         :type password: str
         """
-        if not isinstance(password, basestring):
+        if not isinstance(password, str):
             raise TypeError("Expected str, got %r instead" % type(password))
         self.__password = to_utf8(password)
         super(Password, self).__init__()

@@ -47,14 +47,14 @@ class TestReport(ReportPlugin):
     def generate_report(self, output_file):
 
         # Dump all objects in the database.
-        print "-" * 79
-        print "Report:"
+        print("-" * 79)
+        print("Report:")
         for data in Database.iterate():
-            print
-            print data.identity
-            print repr(data)
-            print sorted(data.links)
+            print()
+            print(data.identity)
+            print(repr(data))
+            print(sorted(data.links))
             for linked in data.linked_data:
-                print "--> " + linked.identity
-                print "--> " + repr(linked)
-        print
+                print("--> " + linked.identity)
+                print("--> " + repr(linked))
+        print()

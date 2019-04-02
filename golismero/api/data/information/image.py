@@ -31,7 +31,7 @@ __all__ = ["Image"]
 from .binary import Binary
 from .geolocation import Geolocation
 
-from StringIO import StringIO
+from io import StringIO
 from warnings import warn
 
 # Lazy import.
@@ -167,6 +167,6 @@ class Image(Binary):
                     )
                     geoloc.add_link(self)
                     return [geoloc]
-                except Exception, e:
+                except Exception as e:
                     warn(str(e), RuntimeWarning)
         return []

@@ -55,16 +55,7 @@ from golismero.main.console import Console, colorize, colorize_substring, get_te
 
 
 #------------------------------------------------------------------------------
-from texttable import Texttable as orig_Texttable
-
-class Texttable(orig_Texttable):
-    def _str(self, i, x):
-        if x is None:
-            return ""
-        if isinstance(x, unicode):
-            return x.encode("UTF-8")
-        return str(x)
-
+from texttable import Texttable
 
 #------------------------------------------------------------------------------
 class TextReport(ReportPlugin):
@@ -150,24 +141,24 @@ class TextReport(ReportPlugin):
     def __write_report(self):
 
         # Header
-        print >>self.__fd, ""
-        print >>self.__fd, "--= %s =--" % self.__colorize("Report", "cyan")
-        print >>self.__fd, ""
+        print("", file=self.__fd)
+        print("--= %s =--" % self.__colorize("Report", "cyan"), file=self.__fd)
+        print("", file=self.__fd)
 
         # Summary
         start_time, stop_time, run_time = parse_audit_times( *get_audit_times() )
         host_count  = Database.count(Data.TYPE_RESOURCE, Domain.data_subtype)
         host_count += Database.count(Data.TYPE_RESOURCE, IP.data_subtype)
         vuln_count  = Database.count(Data.TYPE_VULNERABILITY)
-        print >>self.__fd, "-# %s #- " % self.__colorize("Summary", "yellow")
-        print >>self.__fd, ""
-        print >>self.__fd, "Audit started:   %s" % self.__colorize(start_time, "yellow")
-        print >>self.__fd, "Audit ended:     %s" % self.__colorize(stop_time, "yellow")
-        print >>self.__fd, "Execution time:  %s" % self.__colorize(run_time, "yellow")
-        print >>self.__fd, ""
-        print >>self.__fd, "Scanned hosts:   %s" % self.__colorize(str(host_count), "yellow")
-        print >>self.__fd, "Vulnerabilities: %s" % self.__colorize(str(vuln_count), "red" if vuln_count else "yellow")
-        print >>self.__fd, ""
+        print("-# %s #- " % self.__colorize("Summary", "yellow"), file=self.__fd)
+        print("", file=self.__fd)
+        print("Audit started:   %s" % self.__colorize(start_time, "yellow"), file=self.__fd)
+        print("Audit ended:     %s" % self.__colorize(stop_time, "yellow"), file=self.__fd)
+        print("Execution time:  %s" % self.__colorize(run_time, "yellow"), file=self.__fd)
+        print("", file=self.__fd)
+        print("Scanned hosts:   %s" % self.__colorize(str(host_count), "yellow"), file=self.__fd)
+        print("Vulnerabilities: %s" % self.__colorize(str(vuln_count), "red" if vuln_count else "yellow"), file=self.__fd)
+        print("", file=self.__fd)
 
         # Audit scope
         if self.__show_data or not self.__console:
@@ -182,10 +173,10 @@ class TextReport(ReportPlugin):
                 table.add_row(("Web pages", "\n".join(Config.audit_scope.web_pages)))
             if table._rows:
                 self.__fix_table_width(table)
-                print >>self.__fd, "-# %s #- " % self.__colorize("Audit Scope", "yellow")
-                print >>self.__fd, ""
-                print >>self.__fd, table.draw()
-                print >>self.__fd, ""
+                print("-# %s #- " % self.__colorize("Audit Scope", "yellow"), file=self.__fd)
+                print("", file=self.__fd)
+                print(table.draw(), file=self.__fd)
+                print("", file=self.__fd)
 
         # Discovered hosts
         if self.__show_data:
@@ -199,15 +190,15 @@ class TextReport(ReportPlugin):
                 if table._rows:
                     if need_header:
                         need_header = False
-                        print >>self.__fd, "-# %s #- " % self.__colorize("Hosts", "yellow")
-                        print >>self.__fd, ""
+                        print("-# %s #- " % self.__colorize("Hosts", "yellow"), file=self.__fd)
+                        print("", file=self.__fd)
                     table.header(("Domain Name", domain.hostname))
                     self.__fix_table_width(table)
                     text = table.draw()
                     if self.__color:
                         text = colorize_substring(text, domain.hostname, "red" if domain.get_links(Data.TYPE_VULNERABILITY) else "green")
-                    print >>self.__fd, text
-                    print >>self.__fd, ""
+                    print(text, file=self.__fd)
+                    print("", file=self.__fd)
             for ip in self.__iterate(Data.TYPE_RESOURCE, IP.data_subtype):
                 table = Texttable()
                 self.__add_related(table, ip, Data.TYPE_RESOURCE, Domain.data_subtype, "Domain Name")
@@ -222,20 +213,20 @@ class TextReport(ReportPlugin):
                 if table._rows:
                     if need_header:
                         need_header = False
-                        print >>self.__fd, "-# %s #- " % self.__colorize("Hosts", "yellow")
-                        print >>self.__fd, ""
+                        print("-# %s #- " % self.__colorize("Hosts", "yellow"), file=self.__fd)
+                        print("", file=self.__fd)
                     table.header(("IP Address", ip.address))
                     self.__fix_table_width(table)
                     text = table.draw()
                     if self.__color:
                         text = colorize_substring(text, ip.address, "red" if ip.get_links(Data.TYPE_VULNERABILITY) else "green")
-                    print >>self.__fd, text
-                    print >>self.__fd, ""
+                    print(text, file=self.__fd)
+                    print("", file=self.__fd)
 
         # Web servers
         if self.__show_data and Database.count(Data.TYPE_RESOURCE, BaseURL.data_subtype):
-            print >>self.__fd, "-# %s #- " % self.__colorize("Web Servers", "yellow")
-            print >>self.__fd, ""
+            print("-# %s #- " % self.__colorize("Web Servers", "yellow"), file=self.__fd)
+            print("", file=self.__fd)
             crawled = defaultdict(list)
             vulnerable = []
             for url in self.__iterate(Data.TYPE_RESOURCE, URL.data_subtype):
@@ -263,8 +254,8 @@ class TextReport(ReportPlugin):
                         for u in vulnerable:
                             if u != url.url:
                                 text = colorize_substring(text, u, "red")
-                    print >>self.__fd, text
-                    print >>self.__fd, ""
+                    print(text, file=self.__fd)
+                    print("", file=self.__fd)
 
         # Emails
         if self.__show_data:
@@ -273,30 +264,29 @@ class TextReport(ReportPlugin):
                 for e in self.__iterate(Data.TYPE_RESOURCE, Email.data_subtype)
             }
             if emails:
-                print >>self.__fd, "-# %s #- " % self.__colorize("Email Addresses", "yellow")
-                print >>self.__fd, ""
+                print("-# %s #- " % self.__colorize("Email Addresses", "yellow"), file=self.__fd)
+                print("", file=self.__fd)
                 for e in sorted(emails):
-                    print >>self.__fd, "* " + self.__colorize(e, emails[e])
-                print >>self.__fd, ""
+                    print("* " + self.__colorize(e, emails[e]), file=self.__fd)
+                print("", file=self.__fd)
 
         # Vulnerabilities
-        print >>self.__fd, "-# %s #- " % self.__colorize("Vulnerabilities", "yellow")
-        print >>self.__fd, ""
+        print("-# %s #- " % self.__colorize("Vulnerabilities", "yellow"), file=self.__fd)
+        print("", file=self.__fd)
         count = Database.count(Data.TYPE_VULNERABILITY)
         if count:
             if self.__show_data:
-                print >>self.__fd, self.__colorize("%d vulnerabilities found!" % count, "red")
-                print >>self.__fd, ""
-            vuln_types = { v.display_name: v.vulnerability_type for v in self.__iterate(Data.TYPE_VULNERABILITY) }
-            titles = vuln_types.keys()
-            titles.sort()
+                print(self.__colorize("%d vulnerabilities found!" % count, "red"), file=self.__fd)
+                print("", file=self.__fd)
+            vuln_types = { v.display_name: v.data_subtype for v in self.__iterate(Data.TYPE_VULNERABILITY)}
+            titles = sorted(vuln_types.keys())
             if "Uncategorized Vulnerability" in titles:
                 titles.remove("Uncategorized Vulnerability")
                 titles.append("Uncategorized Vulnerability")
             for title in titles:
                 data_subtype = vuln_types[title]
-                print >>self.__fd, "-- %s (%s) -- " % (self.__colorize(title, "cyan"), data_subtype)
-                print >>self.__fd, ""
+                print("-- %s (%s) -- " % (self.__colorize(title, "cyan"), data_subtype), file=self.__fd)
+                print("", file=self.__fd)
                 for vuln in self.__iterate(Data.TYPE_VULNERABILITY, data_subtype):
                     table = Texttable()
                     table.header(("Occurrence ID", vuln.identity))
@@ -358,11 +348,11 @@ class TextReport(ReportPlugin):
                             if lvl in text_3:
                                 text_3 = colorize_substring(text_3, lvl, lvl.lower())
                         text = text_1 + text[w:p] + text_3 + text[q:]
-                    print >>self.__fd, text
-                    print >>self.__fd, ""
+                    print(text, file=self.__fd)
+                    print("", file=self.__fd)
         else:
-            print >>self.__fd, self.__colorize("No vulnerabilities found.", "green")
-            print >>self.__fd, ""
+            print(self.__colorize("No vulnerabilities found.", "green"), file=self.__fd)
+            print("", file=self.__fd)
 
 
     #--------------------------------------------------------------------------

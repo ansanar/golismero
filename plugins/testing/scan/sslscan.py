@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import re
 
-from BeautifulSoup import BeautifulStoneSoup
+from bs4 import BeautifulStoneSoup
 from collections import namedtuple
 from datetime import datetime
 from os.path import join, split, sep
@@ -347,7 +347,7 @@ class SSLScanPlugin(TestingPlugin):
             # For each scan result...
             try:
                 tags = tree.findAll("ssltest")
-            except Exception, e:
+            except Exception as e:
                 tb = format_exc()
                 Logger.log_error("Error parsing XML file: %s" % str(e))
                 Logger.log_error_more_verbose(tb)
@@ -410,7 +410,7 @@ class SSLScanPlugin(TestingPlugin):
                         count += 1
 
                     # Weak keys?
-                    k = [int(y.bits) for i in m_ciphers if int(y.bits) <= 56]
+                    k = [int(y.bits) for y in m_ciphers if int(y.bits) <= 56]
                     if k:
                         results.append( WeakKey(info, k) )
                         count += 1
@@ -422,13 +422,13 @@ class SSLScanPlugin(TestingPlugin):
                         count += 1
 
                 # On error, log the exception and continue.
-                except Exception, e:
+                except Exception as e:
                     tb = format_exc()
                     Logger.log_error_verbose(str(e))
                     Logger.log_error_more_verbose(tb)
 
         # On error, log the exception.
-        except Exception, e:
+        except Exception as e:
             tb = format_exc()
             Logger.log_error_verbose(str(e))
             Logger.log_error_more_verbose(tb)

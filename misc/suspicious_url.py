@@ -174,7 +174,7 @@ class SuspiciousURLPlugin(TestingPlugin):
             try:
                 if url not in Config.audit_scope:
                     m_output_links.append(url)
-            except Exception, e:
+            except Exception as e:
                 Logger.log_error_more_verbose(format_exc())
 
         Logger.log("4")

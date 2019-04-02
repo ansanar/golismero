@@ -65,7 +65,7 @@ class ImportManager (object):
         for input_file in self.__config.imports:
             if input_file in self.__importers:
                 continue
-            found = [name for name, plugin in self.__plugins.iteritems()
+            found = [name for name, plugin in iter(self.__plugins.items())
                           if plugin.is_supported(input_file)]
             if not found:
                 raise ValueError(
@@ -132,7 +132,7 @@ class ImportManager (object):
         # For each input file, run its corresponding import plugin.
         # Import plugins are run in the same process as the Orchestrator.
         count = 0
-        for input_file, plugin_id in self.__importers.iteritems():
+        for input_file, plugin_id in iter(self.__importers.items()):
             try:
                 plugin_instance = self.__plugins[plugin_id]
                 context = self.orchestrator.build_plugin_context(
@@ -144,7 +144,7 @@ class ImportManager (object):
                     plugin_instance.import_results(input_file)
                 finally:
                     Config._context = old_context
-            except Exception, e:
+            except Exception as e:
                 Logger.log_error(
                     "Failed to import results from file %r: %s" %
                     (input_file, str(e)))

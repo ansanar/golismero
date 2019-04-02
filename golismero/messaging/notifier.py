@@ -97,7 +97,7 @@ class AbstractNotifier (object):
         :param plugins: Map of plugin IDs to plugin instances.
         :type plugins: dict(str -> Plugin)
         """
-        for name, plugin in plugins.iteritems():
+        for name, plugin in iter(plugins.items()):
             self.add_plugin(name, plugin)
 
 
@@ -856,7 +856,7 @@ class OrchestratorNotifier(AbstractNotifier):
             msg = "Plugin %s raised an exception:\n%s"
             msg = msg % (plugin.__class__.__name__, format_exc())
             ##Logger.log_error(msg)
-            print msg   # it's safer to print, avoids possible infinite loops
+            print(msg)   # it's safer to print, avoids possible infinite loops
 
 
     #--------------------------------------------------------------------------

@@ -87,7 +87,7 @@ except ImportError:
 
 # Other imports.
 from netaddr import IPNetwork
-from ConfigParser import RawConfigParser
+from configparser import RawConfigParser
 from keyword import iskeyword
 from os import path
 
@@ -425,13 +425,11 @@ class Configuration (object):
     def string(x):
         if x is None:
             return None
-        if isinstance(x, unicode):
-            return x.encode("UTF-8")
         return str(x)
 
     @staticmethod
     def integer(x):
-        if type(x) in (int, long):
+        if type(x) == int:
             return x
         return int(x, 0) if x else 0
 
@@ -452,8 +450,6 @@ class Configuration (object):
             return []
         if isinstance(x, str):
             return [t.strip() for t in x.split(",")]
-        if isinstance(x, unicode):
-            return [t.strip().encode("UTF-8") for t in x.split(u",")]
         return list(x)
 
     @staticmethod
@@ -514,7 +510,7 @@ class Configuration (object):
     #--------------------------------------------------------------------------
     def __init__(self):
         history = set()
-        for name, definition in self._settings_.iteritems():
+        for name, definition in iter(self._settings_.items()):
             if name in history:
                 raise SyntaxError("Duplicated option name: %r" % name)
             history.add(name)
@@ -576,7 +572,7 @@ class Configuration (object):
         :param args: Settings.
         :type args: dict(str -> \\*)
         """
-        for name, value in args.iteritems():
+        for name, value in iter(args.items()):
             if name in self._settings_:
                 setattr(self, name, value)
 
@@ -599,7 +595,7 @@ class Configuration (object):
         }
 
         # Remove all attributes whose values are None.
-        args = { k:v for k,v in args.iteritems() if v is not None }
+        args = { k:v for k,v in iter(args.items()) if v is not None }
 
         # Extract the settings from the dictionary.
         if args:
@@ -664,7 +660,7 @@ class Configuration (object):
         :rtype: dict(str -> \\*)
         """
         result = {}
-        for name, definition in self._settings_.iteritems():
+        for name, definition in iter(self._settings_.items()):
             default = None
             if type(definition) in (tuple, list) and len(definition) > 1:
                 default = definition[1]
@@ -769,24 +765,16 @@ class OrchestratorConfig (Configuration):
     def _load_profile(self, args):
         if "profile" in args:
             self.profile = args["profile"]
-            if isinstance(self.profile, unicode):
-                self.profile = self.profile.encode("UTF-8")
             self.profile_file = get_profile(self.profile)
 
     @staticmethod
     def _load_plugin_args(self, args):
         if "plugin_args" in args:
             plugin_args = {}
-            for (plugin_id, target_args) in args["plugin_args"].iteritems():
-                if isinstance(plugin_id, unicode):
-                    plugin_id = plugin_id.encode("UTF-8")
+            for (plugin_id, target_args) in iter(args["plugin_args"].items()):
                 if not plugin_id in plugin_args:
                     plugin_args[plugin_id] = {}
-                for (key, value) in target_args.iteritems():
-                    if isinstance(key, unicode):
-                        key = key.encode("UTF-8")
-                    if isinstance(value, unicode):
-                        value = value.encode("UTF-8")
+                for (key, value) in iter(target_args.items()):
                     plugin_args[plugin_id][key] = value
             self.plugin_args = plugin_args
 
@@ -962,8 +950,6 @@ class AuditConfig (Configuration):
         # Load the "command" property.
         if "command" in args:
             self.command = args["command"]
-            if isinstance(self.command, unicode):
-                self.command = self.command.encode("UTF-8")
 
         # Load the "plugin_load_overrides" property.
         if "plugin_load_overrides" in args:
@@ -1015,13 +1001,6 @@ class AuditConfig (Configuration):
         targets = [
             x
             for x in set(targets)
-            if x not in self._targets
-        ]
-
-        # Encode all Unicode strings as UTF-8.
-        targets = [
-            x.encode("UTF-8") if isinstance(x, unicode) else str(x)
-            for x in targets
             if x not in self._targets
         ]
 
@@ -1108,8 +1087,6 @@ class AuditConfig (Configuration):
     @user_agent.setter
     def user_agent(self, user_agent):
         if user_agent:
-            if isinstance(user_agent, unicode):
-                user_agent = user_agent.encode("UTF-8")
             self._user_agent = user_agent
         else:
             self._user_agent = None
@@ -1126,8 +1103,6 @@ class AuditConfig (Configuration):
         if cookie:
             # Parse the cookies argument.
             try:
-                if isinstance(cookie, unicode):
-                    cookie = cookie.encode("UTF-8")
                 # Prepare cookie.
                 cookie = cookie.replace(" ", "").replace("=", ":")
                 # Remove 'Cookie:' start, if exits.
@@ -1156,8 +1131,6 @@ class AuditConfig (Configuration):
     def proxy_addr(self, proxy_addr):
         if proxy_addr:
             proxy_addr = proxy_addr.strip()
-            if isinstance(proxy_addr, unicode):
-                proxy_addr = proxy_addr.encode("UTF-8")
             if ":" in proxy_addr:
                 proxy_addr, proxy_port = proxy_addr.split(":", 1)
                 proxy_addr = proxy_addr.strip()

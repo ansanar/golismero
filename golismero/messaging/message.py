@@ -84,9 +84,9 @@ class Message (object):
             raise TypeError("Expected int, got %r instead" % type(message_type))
         if type(message_code) != int:
             raise TypeError("Expected int, got %r instead" % type(message_code))
-        if audit_name is not None and type(audit_name) not in (str, unicode):
+        if audit_name is not None and type(audit_name) != str:
             raise TypeError("Expected int, got %r instead" % type(audit_name))
-        if plugin_id is not None and type(plugin_id) not in (str, unicode):
+        if plugin_id is not None and type(plugin_id) != str:
             raise TypeError("Expected int, got %r instead" % type(plugin_id))
         if ack_identity is not None and type(ack_identity) != str:
             raise TypeError("Expected str, got %r instead" % type(ack_identity))

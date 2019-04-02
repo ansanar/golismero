@@ -51,7 +51,7 @@ def test_nikto():
 
     plugin_id = "testing/scan/nikto"
     csv_file = "test_nikto.csv"
-    print "Testing plugin: %s" % plugin_id
+    print("Testing plugin: %s" % plugin_id)
     orchestrator_config = OrchestratorConfig()
     orchestrator_config.ui_mode = "console"
     audit_config = AuditConfig()
@@ -62,7 +62,7 @@ def test_nikto():
     with PluginTester(orchestrator_config = orchestrator_config,
                       audit_config = audit_config) as t:
 
-        print "Testing Nikto plugin parser..."
+        print("Testing Nikto plugin parser...")
         plugin, plugin_info = t.get_plugin(plugin_id)
         Config._context._PluginContext__plugin_info = plugin_info
         try:
@@ -70,8 +70,8 @@ def test_nikto():
                 BaseURL("http://www.example.com/"), path.join(here, csv_file))
             if DEBUG:
                 for d in r:
-                    print "-" * 10
-                    print repr(d)
+                    print("-" * 10)
+                    print(repr(d))
             assert c == 6, c
             assert len(r) == 10, len(r)
             c = defaultdict(int)
@@ -85,10 +85,10 @@ def test_nikto():
         finally:
             Config._context._PluginContext__plugin_info = None
 
-        print "Testing Nikto plugin against localhost..."
+        print("Testing Nikto plugin against localhost...")
         r = t.run_plugin(plugin_id, BaseURL("http://localhost/"))
         for d in r:
-            print "\t%r" % d
+            print("\t%r" % d)
 
 
 # Run all tests from the command line.

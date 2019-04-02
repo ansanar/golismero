@@ -19,7 +19,7 @@ class = FileExtensionsDisclosureBruteforcer
 [common_extensions]
 w1 = golismero/Discovery/FilenameBruteforce/file-compressed-extensions.txt
 w2 = fuzzdb/Discovery/FilenameBruteforce/Extensions.Backup.fuzz.txt
-w2 = golismero/Discovery/FilenameBruteforce/file-extensions.txt
+w3 = golismero/Discovery/FilenameBruteforce/file-extensions.txt
 
 [microsoft_extensions]
 w1 = golismero/Discovery/FilenameBruteforce/microsoft-file-extensions.txt

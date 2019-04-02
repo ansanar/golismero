@@ -55,14 +55,14 @@ def test_interval():
 
         global handler
 
-        print "Testing setInterval..."
+        print("Testing setInterval...")
         sem.clear()
         handler = helper_test_interval()
         sem.wait()
 
         assert all(
             int( times[index + 1] - times[index] ) == 2
-            for index in xrange(len(times) - 1)
+            for index in range(len(times) - 1)
         )
 
 @setInterval(2)
@@ -70,12 +70,12 @@ def helper_test_interval():
     global num
 
     if num < 1:
-        print "--> Finish!"
+        print("--> Finish!")
         handler.set()
         sem.set()
     else:
         #print "[%s] Iteration %s" % (strftime("%Y-%m-%d %H:%M:%S", gmtime()), str(num))
-        print "--> %d: %s" % (num - 1, strftime("%Y-%m-%d %H:%M:%S", gmtime()))
+        print("--> %d: %s" % (num - 1, strftime("%Y-%m-%d %H:%M:%S", gmtime())))
         num -= 1
         times.append(time())
 

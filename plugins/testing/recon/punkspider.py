@@ -112,7 +112,7 @@ class PunkSPIDER(TestingPlugin):
                 results.append(vuln)
 
             # Log errors.
-            except Exception, e:
+            except Exception as e:
                 tb = traceback.format_exc()
                 Logger.log_error_verbose(str(e))
                 Logger.log_error_more_verbose(tb)
@@ -155,6 +155,6 @@ class PunkSPIDER(TestingPlugin):
             assert r.headers["Content-Type"].startswith("application/json"),\
                 "Response from server is not a JSON encoded object"
             return r.json()
-        except requests.RequestException, e:
+        except requests.RequestException as e:
             Logger.log_error(
                 "Query to PunkSPIDER failed, reason: %s" % str(e))

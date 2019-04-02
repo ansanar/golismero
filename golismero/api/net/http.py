@@ -45,7 +45,7 @@ from requests.cookies import cookiejar_from_dict
 from requests.exceptions import RequestException
 from socket import socket, error, getaddrinfo, SOCK_STREAM
 from ssl import wrap_socket
-from StringIO import StringIO
+from io import StringIO
 from time import time
 
 
@@ -283,7 +283,7 @@ class _HTTP(Singleton):
                     allow_redirects = allow_redirects,
                 )
                 t2 = time()
-            except RequestException, e:
+            except RequestException as e:
                 raise NetworkException(str(e))
 
             try:
@@ -325,7 +325,7 @@ class _HTTP(Singleton):
                     t3 = time()
                     data = resp.content
                     t4 = time()
-                except RequestException, e:
+                except RequestException as e:
                     raise NetworkException(str(e))
 
                 # Calculate the elapsed time.
@@ -419,8 +419,6 @@ class _HTTP(Singleton):
             LocalDataCache.on_autogeneration(raw_request)
         elif not isinstance(raw_request, HTTP_Raw_Request):
             raise TypeError("Expected HTTP_Raw_Request, got %r instead" % type(raw_request))
-        if type(host) == unicode:
-            raise NotImplementedError("Unicode hostnames not yet supported")
         if type(host) != str:
             raise TypeError("Expected str, got %r instead" % type(host))
         if proto not in ("http", "https"):
@@ -432,7 +430,7 @@ class _HTTP(Singleton):
                 port = 443
             else:
                 assert False, "internal error!"
-        elif type(port) not in (int, long):
+        elif type(port) != int:
             raise TypeError("Expected int, got %r instead" % type(port))
         if port < 1 or port > 32767:
             raise ValueError("Invalid port number: %d" % port)
@@ -550,7 +548,7 @@ class _HTTP(Singleton):
                         pass
 
             # On socket errors, send an exception.
-            except error, e:
+            except error as e:
                 raise NetworkException(str(e))
 
         # Should never reach this point.

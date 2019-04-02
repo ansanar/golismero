@@ -28,7 +28,7 @@ from golismero.api.plugin import import_plugin
 json = import_plugin("json.py")
 
 # Lazy imports.
-umsgpack = None
+msgpack = None
 
 
 #------------------------------------------------------------------------------
@@ -44,10 +44,10 @@ class MessagePackOutput(json.JSONOutput):
     def is_supported(self, output_file):
 
         # Load MessagePack.
-        global umsgpack
-        if umsgpack is None:
+        global msgpack
+        if msgpack is None:
             try:
-                import umsgpack
+                import msgpack
             except ImportError:
                 raise RuntimeError(
                     "MessagePack not installed!"
@@ -61,10 +61,10 @@ class MessagePackOutput(json.JSONOutput):
     def generate_report(self, output_file):
 
         # Load MessagePack.
-        global umsgpack
-        if umsgpack is None:
+        global msgpack
+        if msgpack is None:
             try:
-                import umsgpack
+                import msgpack
             except ImportError:
                 raise RuntimeError(
                     "MessagePack not installed!"
@@ -76,11 +76,11 @@ class MessagePackOutput(json.JSONOutput):
 
     #--------------------------------------------------------------------------
     def serialize_report(self, output_file, report_data):
-        raw_data = umsgpack.packb(report_data)
+        raw_data = msgpack.packb(report_data)
         with open(output_file, "wb") as fp:
             fp.write(raw_data)
 
 
     #--------------------------------------------------------------------------
     def test_data_serialization(self, data):
-        umsgpack.packb(data)
+        msgpack.packb(data)

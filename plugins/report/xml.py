@@ -39,7 +39,7 @@ except ImportError:
     import xml.etree.ElementTree as ET
 
 try:
-    from cPickle import dumps
+    from _pickle import dumps
 except ImportError:
     from pickle import dumps
 
@@ -156,7 +156,7 @@ class XMLOutput(ReportPlugin):
         if identities is None:
             identities = list(Database.keys(data_type, data_subtype))
         if identities:
-            for page in xrange(0, len(identities), 100):
+            for page in range(0, len(identities), 100):
                 for data in Database.get_many(identities[page:page + 100]):
                     yield data
 
@@ -193,17 +193,9 @@ class XMLOutput(ReportPlugin):
     def __add_to_xml(self, parent, datas, data_type, tag):
         for data in self.__iterate_data(datas, data_type):
             elem = ET.SubElement(parent, tag)
-            for name, value in data.to_dict().iteritems():
+            for name, value in iter(data.to_dict().items()):
                 if value is None:
                     continue
-                if isinstance(value, unicode):
-                    if name.startswith("raw_"):
-                        value = value.encode("utf-8").encode("base64")
-                    else:
-                        try:
-                            value = value.encode("ascii")
-                        except Exception:
-                            value = value.encode("utf-8").encode("base64")
                 elif isinstance(value, str):
                     if name.startswith("raw_"):
                         value = value.encode("base64")

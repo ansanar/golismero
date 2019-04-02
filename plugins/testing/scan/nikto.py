@@ -136,7 +136,7 @@ class NiktoPlugin(TestingPlugin):
                             if cookie_dict:
                                 cookie = ";".join(
                                     '"%s=%s"' % x
-                                    for x in cookie_dict.iteritems()
+                                    for x in iter(cookie_dict.items())
                                 )
                                 dst.write("STATIC-COOKIE=%s\n" % cookie)
 
@@ -295,7 +295,7 @@ class NiktoPlugin(TestingPlugin):
         hosts_seen = set()
         urls_seen = {}
         try:
-            with open(output_filename, "rU") as f:
+            with open(output_filename, "r") as f:
                 csv_reader = reader(f)
                 for row in csv_reader:
                     try:
@@ -346,7 +346,7 @@ class NiktoPlugin(TestingPlugin):
 
                         # Get the reference URLs.
                         refs = extract_from_text(text)
-                        refs.difference_update(urls_seen.itervalues())
+                        refs.difference_update(urls_seen.values())
 
                         # Convert the information to the GoLismero model.
                         if vuln_tag == "OSVDB-0":
@@ -377,12 +377,12 @@ class NiktoPlugin(TestingPlugin):
                         vuln_count += 1
 
                     # On error, log the exception and continue.
-                    except Exception, e:
+                    except Exception as e:
                         Logger.log_error_verbose(str(e))
                         Logger.log_error_more_verbose(format_exc())
 
         # On error, log the exception.
-        except Exception, e:
+        except Exception as e:
             Logger.log_error_verbose(str(e))
             Logger.log_error_more_verbose(format_exc())
 
@@ -409,7 +409,7 @@ class NiktoImportPlugin(ImportPlugin):
                 None, input_file)
             if results:
                 Database.async_add_many(results)
-        except Exception, e:
+        except Exception as e:
             fmt = format_exc()
             Logger.log_error(
                 "Could not load Nikto results from file: %s" % input_file)

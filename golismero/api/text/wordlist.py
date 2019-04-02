@@ -288,7 +288,7 @@ def _simple_iterator(wordlist_handler):
     try:
         for line in wordlist_handler:
             yield line
-    except IOError, e:
+    except IOError as e:
         raise WordlistNotFound("Error opening wordlist. Error: %s " % str(e))
 
 

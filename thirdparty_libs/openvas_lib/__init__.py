@@ -89,7 +89,7 @@ def report_parser_from_text(text, ignore_log_info=True):
 	try:
 		import cStringIO as S
 	except ImportError:
-		import StringIO as S
+		import io as S
 
 	return report_parser(S.StringIO(text), ignore_log_info)
 
@@ -99,9 +99,9 @@ def report_parser(path_or_file, ignore_log_info=True):
 	This functions transform XML OpenVas file report to OpenVASResult object structure.
 
 	To pass StringIO file as parameter, you must do that:
-	>>> import StringIO
+	>>> import io
 	>>> xml='<report extension="xml" type="scan" id="aaaa" content_type="text/xml" format_id="a994b278-1f62-11e1-96ac-406186ea4fc5"></report>'
-	>>> f=StringIO.StringIO(xml)
+	>>> f=io.StringIO(xml)
 	>>> report_parser(f)
 	[OpenVASResult]
 
@@ -364,6 +364,18 @@ def report_parser(path_or_file, ignore_log_info=True):
 						"NVT oid %s is not a valid NVT value for %s vulnerability. skipping vulnerability..."
 						% (l_nvt_object.oid,
 						   l_vid))
+					logging.debug(e)
+					continue
+
+			# --------------------------------------------------------------------------
+			# Severity
+			# --------------------------------------------------------------------------
+			elif l_tag == "severity":
+				try:
+					l_severity = l_val.text
+					l_partial_result.severity = l_severity
+				except TypeError as e:
+					logging.warning("%s is not a valid severity, skipping vulnerability..." % l_severity)
 					logging.debug(e)
 					continue
 
@@ -938,7 +950,7 @@ class VulnscanManager(object):
 		except ServerError as e:
 			raise VulnscanServerError("Can't get the results for the task %s. Error: %s" % (task_id, e.message))
 
-		m_response = etree.tostring(m_response)
+		m_response = etree.tostring(m_response, "unicode")
 
 		return report_parser_from_text(m_response)
 
@@ -1052,6 +1064,9 @@ class VulnscanManager(object):
 		if statusXML:
 			return statusXML
 		return None
+
+	def close(self):
+		self.__manager.close()
 
 	# ----------------------------------------------------------------------
 	@property

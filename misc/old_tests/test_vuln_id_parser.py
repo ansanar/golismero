@@ -251,36 +251,36 @@ def test_vuln_id_parser():
 
     if DEBUG: from pprint import pprint
 
-    print "Testing the vulnerability ID parsers..."
+    print("Testing the vulnerability ID parsers...")
     if DEBUG:
-        print "-" * 79
-        print "-- test case solution"
+        print("-" * 79)
+        print("-- test case solution")
         pprint(_test_case_extract_solution)
-        print "-" * 79
+        print("-" * 79)
     vulns = extract_vuln_ids(_test_case_extract)
     if DEBUG:
-        print "-- extracted vuln ids"
+        print("-- extracted vuln ids")
         pprint(vulns)
-        print "-" * 79
+        print("-" * 79)
     assert vulns == _test_case_extract_solution
     all_vulns = []
     for v in vulns.values():
         all_vulns.extend(v)
     all_vulns.sort()
     if DEBUG:
-        print "-- only the ids"
+        print("-- only the ids")
         pprint(all_vulns)
-        print "-" * 79
+        print("-" * 79)
     refs = convert_vuln_ids_to_references(all_vulns)
     if DEBUG:
-        print "-- references"
+        print("-- references")
         pprint(refs)
-        print "-" * 79
+        print("-" * 79)
     unrefs = convert_references_to_vuln_ids(refs)
     if DEBUG:
-        print "-- vuln ids back from references"
+        print("-- vuln ids back from references")
         pprint(unrefs)
-        print "-" * 79
+        print("-" * 79)
     assert unrefs == vulns
     urls = []
     for url in _test_case_url.split("\n"):
@@ -289,31 +289,31 @@ def test_vuln_id_parser():
             continue
         urls.append(url)
     parsed = set()
-    for vuln_ids in convert_references_to_vuln_ids(urls).itervalues():
+    for vuln_ids in iter(convert_references_to_vuln_ids(urls).values()):
         parsed.update(vuln_ids)
     if DEBUG:
-        print "-- test case"
+        print("-- test case")
         pprint(urls)
-        print "-" * 79
-        print "-- extracted vuln ids"
+        print("-" * 79)
+        print("-- extracted vuln ids")
         pprint(sorted(parsed))
-        print "-" * 79
+        print("-" * 79)
     assert len(urls) == len(parsed), "%d vs %d" % (len(urls), len(parsed))
 
-    print "Testing reference URLs..."
+    print("Testing reference URLs...")
     import requests
     headers = {"User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.62 Safari/537.36"}
     for url in refs:
-        print "--> " + url
+        print("--> " + url)
         requests.get(url, headers=headers, verify=False)
     for url in urls:
         if url not in refs:
-            print "--> " + url
+            print("--> " + url)
             requests.get(url, headers=headers, verify=False)
 
 
 def test_cvss_calculator():
-    print "Testing the CVSS calculator..."
+    print("Testing the CVSS calculator...")
 
     # Unit test based on Wikipedia examples.
     cvss = CVSS_Base("AV:N/AC:L/Au:N/C:P/I:P/A:C")

@@ -183,7 +183,7 @@ class NetworkManager (object):
         :type audit_name: str
         """
         with self.__rlock:
-            for host, number in self.__tokens.pop(audit_name, {}).itervalues():
+            for host, number in iter(self.__tokens.pop(audit_name, {}).values()):
                 try:
                     sem = self.__semaphores[host]
                     try:
