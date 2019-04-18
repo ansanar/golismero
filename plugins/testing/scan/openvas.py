@@ -226,7 +226,7 @@ class OpenVASPlugin(TestingPlugin):
             try:
                 # Launch the scanner.
                 m_scan_id, m_target_id = m_scanner.launch_scan(
-                    target=info.hostname,
+                    target=info.address,
                     profile=m_profile,
                     callback_end=partial(lambda x: x.set(), m_event),
                     callback_progress=OpenVASProgress(self.update_status)
